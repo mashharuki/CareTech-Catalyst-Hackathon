@@ -1,5 +1,13 @@
 # Coding Conventions
-- Formatting/linting managed by Biome (`biome.json`).
-- Formatter uses spaces and JavaScript double quotes.
-- Keep files concise and focused; repository heavily uses markdown-based skill definitions.
-- Follow AGENTS.md guidance: respond in Japanese, think in English, maintain quality/security/testing discipline, and avoid destructive git actions.
+- Monorepo management: `pnpm` workspace (`pkgs/*`).
+- Root formatting is Biome-driven (`pnpm run format`, configured in `biome.json`).
+- Package style/tooling:
+  - TypeScript + ESM across `cli`, `contract`, `frontend`.
+  - Linting primarily via `eslint` in each package.
+  - Testing via `vitest` (`cli`, `contract`).
+  - Frontend uses Vite + React 19.
+- Workflow and communication constraints from `AGENTS.md`:
+  - Think in English, respond in Japanese.
+  - Follow spec-driven development flow (requirements -> design -> tasks -> implementation).
+  - Prefer safe, non-destructive git operations; avoid silent error suppression.
+  - Maintain security/quality/testing discipline (input validation, explicit error handling, test coverage for behavior).

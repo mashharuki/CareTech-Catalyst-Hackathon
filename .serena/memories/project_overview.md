@@ -1,5 +1,16 @@
 # Project Overview
 - Name: CareTech-Catalyst-Hackathon
-- Purpose: Hackathon workspace for AI/agent skill development (currently focused on Codex/Claude skill assets under `.codex/skills` and `.agents/skills`).
-- Primary stack: Node.js tooling with pnpm and Biome for formatting/linting.
-- Main repository characteristics: lightweight root with skill directories and agent guidance docs (AGENTS.md).
+- Repository type: pnpm monorepo (`pnpm-workspace.yaml` with `pkgs/*`).
+- Main packages:
+  - `pkgs/contract`: Compact contract source (`src/counter.compact`) and TS runtime/test harness.
+  - `pkgs/cli`: Midnight interaction/deploy/test utilities (testnet/standalone/proof-server related scripts).
+  - `pkgs/frontend`: Vite + React 19 frontend.
+- Tooling baseline:
+  - Root formatter: Biome (`biome.json`, `pnpm run format`).
+  - Package-level lint/test/build are managed per package (`eslint`, `vitest`, `tsc`, `vite`).
+- Agent/skill assets:
+  - Both `.agents/skills` and `.codex/skills` exist and are mostly mirrored.
+  - Includes `midnight-compact-app-builder`, `frontend-design`, `vercel-react-best-practices`, `web-design-guidelines`, `skill-creator`, `docs-check`.
+- Process docs:
+  - `AGENTS.md` defines Japanese response policy and Kiro spec-driven workflow expectations.
+  - `.kiro/settings` exists, but `.kiro/steering` and `.kiro/specs` are currently empty (no active spec files yet).

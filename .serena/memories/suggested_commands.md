@@ -1,8 +1,12 @@
 # Suggested Commands
-- `ls -la` : inspect workspace
-- `rg --files` : fast file listing
-- `find .codex/skills -maxdepth 3 -type f | sort` : inspect Codex skill files
-- `find .agents/skills -maxdepth 3 -type f | sort` : inspect Claude skill files
-- `pnpm run format` : format repository via Biome
-- `git status --short` : inspect changed files
-- `git diff -- <path>` : inspect detailed modifications
+- `git status --short` : 変更状況の確認
+- `rg --files pkgs` : パッケージ配下のファイルを高速列挙
+- `pnpm run format` : ルート全体を Biome で整形
+- `pnpm --filter contract test` : contract パッケージのテスト実行
+- `pnpm --filter contract build` : contract パッケージのビルド
+- `pnpm --filter cli lint` : cli パッケージのlint
+- `pnpm --filter cli build` : cli パッケージのビルド
+- `pnpm --filter frontend dev` : frontend の開発サーバ起動
+- `pnpm --filter frontend build` : frontend の本番ビルド
+- `cat AGENTS.md` : プロジェクト固有運用ルールの再確認
+- `ls -la .kiro/specs .kiro/steering` : Kiro仕様ドキュメントの有無確認
