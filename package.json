@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "format": "biome format --write .",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
     "frontend": "pnpm --filter frontend",
     "backend": "pnpm --filter backend",
     "contract": "pnpm --filter contract",
