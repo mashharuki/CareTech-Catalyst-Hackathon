@@ -55,4 +55,7 @@ export default [
       "@typescript-eslint/no-unsafe-argument": "warn",
     },
   },
+  {
+    ignores: ["**/*.d.ts"],
+  },
 ];
