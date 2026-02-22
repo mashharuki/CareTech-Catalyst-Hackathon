@@ -1,61 +1,89 @@
 ---
 name: midnight-compact-app-builder
-description: Compact言語とMidnightのSDKエコシステム（Wallet SDK/API、compact-runtime、proof server、testnet/devnet）を使ったDAppの設計・実装・テスト・デプロイを包括支援する。Compactスマートコントラクトの作成、TypeScript出力の統合、ウォレット連携、証明生成やネットワーク接続、障害対応が必要な場面で使用する。
+description: Midnight（Cardanoサイドチェーン）上でのCompactスマートコントラクトとDAppを設計・実装・検証・デプロイまで一貫支援する。Compact契約設計、TypeScript生成物統合、Wallet API/Wallet SDK連携、proof server運用、testnet/devnet接続、失敗解析が必要な依頼で使用する。
 ---
 
 # Midnight Compact App Builder
 
-## Overview
-- Midnight DApp開発に必要な設計、Compact実装、TypeScript統合、Proof Server運用、ネットワーク検証までを一貫支援する
+Midnight DApp 開発を、要件整理から障害対応までエンドツーエンドで進める。
 
-## Workflow Decision Tree
-- 契約設計やプライバシーモデルの相談 → Contract Design
-- Compact実装やコンパイル出力の扱い → Build Outputs
-- TypeScriptアプリ連携やWallet操作 → SDK Integration
-- 証明生成、ネットワーク、テスト、デプロイ → Proof Server & Network / Testing & Deployment
-- エラーや不具合の解析 → Troubleshooting
+## Start Here
 
-## Quick Start
-1. リポジトリ構造とビルドツールを特定する
-2. Proof Serverの稼働を確認する
-3. Compactコントラクトの設計と実装を行う
-4. コンパイル結果のTypeScript出力をアプリに統合する
-5. 単体テストとネットワーク検証を実行する
+1. まず現在のコードベースを調査し、既存の Compact 契約・TypeScript クライアント・環境変数・ネットワーク設定を把握する。
+2. 不足情報を最小限で確認する。特に以下が不明なら優先して確認する。
+- 対象ネットワーク（local / testnet / devnet）
+- 使用ウォレット方式（Wallet SDK or Wallet API）
+- proof server の接続先
+- 既存コントラクト有無（新規作成か改修か）
+3. 実装前に作業計画を短く提示し、契約設計とアプリ統合の境界を明確にする。
+4. 実装時は TDD を基本とし、失敗ケースのテストを必ず含める。
+5. 完了時は「変更内容・検証結果・残リスク・次アクション」を簡潔に報告する。
 
-## Contract Design
-- 公開状態とプライベート状態を分離し、witnessを明確化する
-- circuit関数は引数と戻り値の型を明示する
-- 選択的開示の最小化を優先し、公開する事実を絞る
-- 詳細は references/compact-language.md と references/fundamentals.md を参照する
-- リポジトリ内に docs/compact があれば併せて参照する
+## Delivery Workflow
 
-## Build Outputs
-- Compactのコンパイルで keys/ と zkir/、TypeScript出力が生成されることを前提に進める
-- TypeScript出力は compact-runtime への依存があるため、導入状況を確認する
-- 詳細は references/compact-language.md と references/tooling-and-sdk.md を参照する
+### 1) Discovery
+- プロジェクト構成を確認し、以下を探す。
+- Compact ソース
+- 生成済み TypeScript 出力
+- wallet 連携コード
+- proof server / network 設定
+- 既存テスト
+- 実行コマンドを特定する（install, build, test, lint, run）。
+- 開発対象を「契約中心」「クライアント中心」「両方」に分類する。
 
-## SDK Integration
-- Wallet APIの balance/prove/submit/transfer を中心にトランザクションフローを構築する
-- Wallet SDKとWallet APIのどちらを使うかをアプリ要件で選択する
-- TypeScript出力のネットワークID設定やProof Server連携を忘れない
-- 詳細は references/tooling-and-sdk.md を参照する
+### 2) Design
+- 公開データと秘匿データを分離し、最小公開を原則に設計する。
+- witness の責務と検証ポイントを明示する。
+- 回路の境界条件とエラー条件を先に列挙し、テストケースへ落とし込む。
+- 外部公開 API（UI/Backend から呼ばれる層）は、入力検証と例外方針を決めてから実装する。
 
-## Proof Server & Network
-- ローカルProof Serverとtestnet/devnetのどちらを使うかを明確化する
-- Proof ServerのURLとネットワークIDは環境設定に集約する
-- 詳細は references/tooling-and-sdk.md を参照する
+### 3) Implement
+- Compact の型・状態遷移・回路ロジックを先に安定化させる。
+- 生成 TypeScript を統合し、wallet 連携を段階的に接続する。
+- 環境依存値（network ID, endpoint, secrets）はハードコードしない。
+- 既存コードスタイルに従い、重複は小さなヘルパーに集約する。
 
-## Testing & Deployment
-- Compact単体テストとTypeScript統合テストを分離して実行する
-- testnet/devnetではtDUSTなどのテスト用トークン確保を前提にする
-- 重要なフローはリポジトリの既存スクリプトやCLIに統合する
+### 4) Verify
+- 正常系だけでなく、以下の失敗系を必ず確認する。
+- proof 生成失敗
+- ネットワーク不一致
+- 残高不足/資源不足
+- 不正入力
+- ステート非整合
+- 契約テストと統合テストを分離して実行し、失敗時の再現手順を記録する。
 
-## Troubleshooting
-- 証明生成失敗はProof Server稼働とネットワークIDを最優先で確認する
-- 回路の型エラーはCompact型定義とwitnessの整合を確認する
-- ウォレット同期不備はstate/serializeStateと履歴の整合を確認する
+### 5) Deploy / Operate
+- デプロイ先ネットワークと資金（テストトークン含む）を確認する。
+- ロールバック・再実行の手順を明確にしてから反映する。
+- 運用時はログとトランザクション追跡情報を残し、障害解析可能性を担保する。
 
-## References
-- references/fundamentals.md
-- references/compact-language.md
-- references/tooling-and-sdk.md
+## Quality Gates
+
+- 機密情報は環境変数で管理し、コードやログに露出させない。
+- 例外は握りつぶさず、原因が追えるメッセージにする。
+- リトライが必要な処理は対象を限定し、指数バックオフ方針を定義する。
+- 仕様変更時は関連テストを同時更新し、古い挙動を暗黙に残さない。
+
+## Troubleshooting Priority
+
+1. 環境不整合（network ID / endpoint / proof server URL）
+2. 生成物不整合（契約変更後に生成物が古い）
+3. 回路制約違反（型・witness・遷移条件）
+4. ウォレット連携不備（状態同期、署名、送信順序）
+5. 外部依存の一時障害（ネットワークやノードの遅延）
+
+## Required References
+
+必要な箇所だけ読むこと。
+
+- 全体像・環境前提: `references/fundamentals.md`
+- Compact 設計と実装: `references/compact-language.md`
+- SDK/API/運用: `references/tooling-and-sdk.md`
+
+## Official Sources
+
+- Midnight Docs: https://docs.midnight.network/
+- Wallet Developer Guide: https://docs.midnight.network/develop/tutorial/using/wallet-developer-guide
+- API Reference Index: https://docs.midnight.network/develop/reference/api-reference
+- Compact Runtime Package: https://www.npmjs.com/package/@midnight-ntwrk/compact-runtime
+- Midnight.js SDK: https://github.com/input-output-hk/midnight-js
