@@ -12,6 +12,7 @@ import {
 } from "../src/config.js";
 import * as api from "../src/api.js";
 import * as dotenv from "dotenv";
+import { assertAuthorized, loadAuthzContextFromEnv } from "shared-infra/authz";
 
 dotenv.config();
 
@@ -116,6 +117,7 @@ let logger: Logger | undefined;
  * コントラクトデプロイ用のスクリプト
  */
 const main = async () => {
+  assertAuthorized(loadAuthzContextFromEnv("system"), ["ops:deploy"]);
   // ネットワーク情報を取得する
   const network = resolveNetwork(NETWORK_ENV_VAR);
   const seed = ensureSeed(SEED_ENV_VAR);

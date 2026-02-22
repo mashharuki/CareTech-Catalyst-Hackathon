@@ -22,6 +22,11 @@
       "import": "./dist/logger.js",
       "types": "./dist/logger.d.ts",
       "default": "./dist/logger.js"
+    },
+    "./authz": {
+      "import": "./dist/authz.js",
+      "types": "./dist/authz.d.ts",
+      "default": "./dist/authz.js"
     }
   },
   "types": "./dist/index.d.ts",

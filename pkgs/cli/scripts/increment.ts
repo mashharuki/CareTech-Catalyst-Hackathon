@@ -13,6 +13,7 @@ import {
 import * as api from "../src/api.js";
 import { assertIsContractAddress } from "@midnight-ntwrk/midnight-js-utils";
 import * as dotenv from "dotenv";
+import { assertAuthorized, loadAuthzContextFromEnv } from "shared-infra/authz";
 
 dotenv.config();
 
@@ -106,6 +107,7 @@ const closeIfPossible = async (
 let logger: Logger | undefined;
 
 const main = async () => {
+  assertAuthorized(loadAuthzContextFromEnv("system"), ["ops:invoke"]);
   const network = resolveNetwork(NETWORK_ENV_VAR);
   const seed = ensureSeed(SEED_ENV_VAR);
   const contractAddress = ensureContractAddress(CONTRACT_ADDRESS);
