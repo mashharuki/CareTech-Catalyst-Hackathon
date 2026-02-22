@@ -141,22 +141,40 @@ export function buildOpsRouter(): Hono {
     if (!contractAddress || !hashHex) {
       return c.json({ error: "INVALID_INPUT" }, 400);
     }
+    const normalized = hashHex.startsWith("0x") ? hashHex : `0x${hashHex}`;
+    if (process.env.OPS_ANCHOR_FORCE_STUB === "1") {
+      return c.json({
+        ok: true,
+        result: {
+          txId: "a".repeat(64),
+          blockHeight: 1,
+          lastAnchor: normalized.toLowerCase(),
+        },
+      });
+    }
     try {
-      const hashField: bigint = BigInt(
-        hashHex.startsWith("0x") ? hashHex : `0x${hashHex}`,
-      );
-      if (process.env.NODE_ENV === "test" || process.env.OPS_ANCHOR_FORCE_STUB === "1") {
+      const hashField: bigint = BigInt(normalized);
+      if (process.env.NODE_ENV === "test") {
         return c.json({
           ok: true,
           result: {
             txId: "a".repeat(64),
             blockHeight: 1,
-            lastAnchor: hashField,
+            lastAnchor: normalized.toLowerCase(),
           },
         });
       }
       const result = await performAnchor(console, contractAddress, hashField);
-      return c.json({ ok: true, result });
+      const lastAnchorHex =
+        result.lastAnchor != null ? `0x${result.lastAnchor.toString(16)}` : null;
+      return c.json({
+        ok: true,
+        result: {
+          txId: result.txId,
+          blockHeight: result.blockHeight,
+          lastAnchor: lastAnchorHex,
+        },
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return c.json({ ok: false, error: message }, 500);
