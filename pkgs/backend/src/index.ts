@@ -1,8 +1,9 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import { getProviderConfigFromEnv } from 'shared-infra/network'
-import { createAppLogger } from 'shared-infra/logger'
 import { authorizeScopes } from 'shared-infra/authz'
+import { createAppLogger } from 'shared-infra/logger'
+import { getProviderConfigFromEnv } from 'shared-infra/network'
+import { buildParticipantsRouter } from './participants.js'
 
 const app = new Hono()
 
@@ -27,6 +28,9 @@ app.get('/', (c) => {
   }
   return c.text('Hello Hono!')
 })
+
+// 参加者管理APIをマウント
+app.route('/api/participants', buildParticipantsRouter())
 
 // 共通プロバイダ設定とロガーの初期化
 const providerCfg = getProviderConfigFromEnv()
