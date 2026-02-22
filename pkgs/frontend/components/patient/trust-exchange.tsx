@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 import {
   Store,
   FlaskConical,
@@ -18,25 +18,25 @@ import {
   ChevronUp,
   Eye,
   Lock,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface DataListing {
-  id: string
-  title: string
-  organization: string
-  reward: number
-  type: "sell" | "donate" | "license"
-  description: string
-  icon: typeof FlaskConical
-  tags: string[]
-  buyers: number
-  rating: number
-  accessLevel: "full" | "partial" | "aggregated"
-  duration: string
-  urgency: "high" | "normal" | "low"
-  policyDetail: string
+  id: string;
+  title: string;
+  organization: string;
+  reward: number;
+  type: "sell" | "donate" | "license";
+  description: string;
+  icon: typeof FlaskConical;
+  tags: string[];
+  buyers: number;
+  rating: number;
+  accessLevel: "full" | "partial" | "aggregated";
+  duration: string;
+  urgency: "high" | "normal" | "low";
+  policyDetail: string;
 }
 
 const listings: DataListing[] = [
@@ -112,55 +112,59 @@ const listings: DataListing[] = [
     policyDetail:
       "Full anonymized dataset access. Triple-layer encryption with Midnight shielded transactions. Mandatory ethics board review.",
   },
-]
+];
 
-type TxState = "idle" | "auth" | "zkproof" | "signing" | "complete"
+type TxState = "idle" | "auth" | "zkproof" | "signing" | "complete";
 
 export function TrustExchange({
   onTransaction,
 }: {
-  onTransaction: (reward: number, orgName: string) => void
+  onTransaction: (reward: number, orgName: string) => void;
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [txState, setTxState] = useState<TxState>("idle")
-  const [filter, setFilter] = useState<"all" | "sell" | "donate" | "license">("all")
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [txState, setTxState] = useState<TxState>("idle");
+  const [filter, setFilter] = useState<"all" | "sell" | "donate" | "license">(
+    "all",
+  );
 
-  const filtered = filter === "all" ? listings : listings.filter((l) => l.type === filter)
+  const filtered =
+    filter === "all" ? listings : listings.filter((l) => l.type === filter);
 
   const handleAction = (listing: DataListing) => {
-    setSelectedId(listing.id)
-    setTxState("auth")
+    setSelectedId(listing.id);
+    setTxState("auth");
 
-    setTimeout(() => setTxState("zkproof"), 1800)
-    setTimeout(() => setTxState("signing"), 3200)
+    setTimeout(() => setTxState("zkproof"), 1800);
+    setTimeout(() => setTxState("signing"), 3200);
     setTimeout(() => {
-      setTxState("complete")
-      onTransaction(listing.reward, listing.organization)
-    }, 4500)
+      setTxState("complete");
+      onTransaction(listing.reward, listing.organization);
+    }, 4500);
     setTimeout(() => {
-      setTxState("idle")
-      setSelectedId(null)
-    }, 7000)
-  }
+      setTxState("idle");
+      setSelectedId(null);
+    }, 7000);
+  };
 
   const accessColor = (level: string) => {
-    if (level === "full") return "text-emerald-600 bg-emerald-50"
-    if (level === "partial") return "text-amber-600 bg-amber-50"
-    return "text-primary bg-primary/10"
-  }
+    if (level === "full") return "text-emerald-600 bg-emerald-50";
+    if (level === "partial") return "text-amber-600 bg-amber-50";
+    return "text-primary bg-primary/10";
+  };
 
   const urgencyBadge = (urgency: string) => {
-    if (urgency === "high") return "border-red-200 bg-red-50 text-red-600"
-    if (urgency === "normal") return "border-border bg-secondary text-muted-foreground"
-    return "border-border bg-secondary/50 text-muted-foreground"
-  }
+    if (urgency === "high") return "border-red-200 bg-red-50 text-red-600";
+    if (urgency === "normal")
+      return "border-border bg-secondary text-muted-foreground";
+    return "border-border bg-secondary/50 text-muted-foreground";
+  };
 
   const typeLabel = (type: string) => {
-    if (type === "sell") return "Sell"
-    if (type === "donate") return "Donate"
-    return "License"
-  }
+    if (type === "sell") return "Sell";
+    if (type === "donate") return "Donate";
+    return "License";
+  };
 
   return (
     <div className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-6">
@@ -181,7 +185,9 @@ export function TrustExchange({
       {/* Summary stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
-          <p className="text-lg font-medium text-foreground">{listings.length}</p>
+          <p className="text-lg font-medium text-foreground">
+            {listings.length}
+          </p>
           <p className="text-[10px] text-muted-foreground">Active Requests</p>
         </div>
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
@@ -194,7 +200,9 @@ export function TrustExchange({
           <p className="text-lg font-medium text-primary">
             {listings.reduce((s, l) => s + l.reward, 0).toLocaleString()}
           </p>
-          <p className="text-[10px] text-muted-foreground">Max $TRUST Available</p>
+          <p className="text-[10px] text-muted-foreground">
+            Max $TRUST Available
+          </p>
         </div>
       </div>
 
@@ -219,9 +227,9 @@ export function TrustExchange({
       <div className="flex flex-col gap-3">
         <AnimatePresence>
           {filtered.map((listing, i) => {
-            const isSelected = selectedId === listing.id
-            const isExpanded = expandedId === listing.id
-            const Icon = listing.icon
+            const isSelected = selectedId === listing.id;
+            const isExpanded = expandedId === listing.id;
+            const Icon = listing.icon;
 
             return (
               <motion.div
@@ -449,7 +457,8 @@ export function TrustExchange({
                               <CheckCircle2 className="h-4 w-4" />
                               <span>
                                 Transaction Complete -{" "}
-                                {listing.reward.toLocaleString()} $TRUST credited
+                                {listing.reward.toLocaleString()} $TRUST
+                                credited
                               </span>
                             </motion.div>
                           )}
@@ -459,10 +468,10 @@ export function TrustExchange({
                   </div>
                 </div>
               </motion.div>
-            )
+            );
           })}
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 }

@@ -13,15 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type Resource } from '@midnight-ntwrk/wallet';
-import { type Wallet } from '@midnight-ntwrk/wallet-api';
-import { stdin as input, stdout as output } from 'node:process';
-import { createInterface, type Interface } from 'node:readline/promises';
-import { type Logger } from 'pino';
-import { type StartedDockerComposeEnvironment, type DockerComposeEnvironment } from 'testcontainers';
-import { type CounterProviders, type DeployedCounterContract } from './utils/common-types';
-import { type Config, StandaloneConfig } from './config';
-import * as api from './api';
+import { type Resource } from "@midnight-ntwrk/wallet";
+import { type Wallet } from "@midnight-ntwrk/wallet-api";
+import { stdin as input, stdout as output } from "node:process";
+import { createInterface, type Interface } from "node:readline/promises";
+import { type Logger } from "pino";
+import {
+  type StartedDockerComposeEnvironment,
+  type DockerComposeEnvironment,
+} from "testcontainers";
+import {
+  type CounterProviders,
+  type DeployedCounterContract,
+} from "./utils/common-types";
+import { type Config, StandaloneConfig } from "./config";
+import * as api from "./api";
 
 let logger: Logger;
 
@@ -29,7 +35,8 @@ let logger: Logger;
  * This seed gives access to tokens minted in the genesis block of a local development node - only
  * used in standalone networks to build a wallet with initial funds.
  */
-const GENESIS_MINT_WALLET_SEED = '0000000000000000000000000000000000000000000000000000000000000001';
+const GENESIS_MINT_WALLET_SEED =
+  "0000000000000000000000000000000000000000000000000000000000000001";
 
 const DEPLOY_OR_JOIN_QUESTION = `
 You can do one of the following:
@@ -51,8 +58,13 @@ Which would you like to do? `;
  * @param rli
  * @returns
  */
-const join = async (providers: CounterProviders, rli: Interface): Promise<DeployedCounterContract> => {
-  const contractAddress = await rli.question('What is the contract address (in hex)? ');
+const join = async (
+  providers: CounterProviders,
+  rli: Interface,
+): Promise<DeployedCounterContract> => {
+  const contractAddress = await rli.question(
+    "What is the contract address (in hex)? ",
+  );
   // joinContractメソッドを呼び出して既存のコントラクトインスタンスを作成する
   return await api.joinContract(providers, contractAddress);
 };
@@ -63,18 +75,21 @@ const join = async (providers: CounterProviders, rli: Interface): Promise<Deploy
  * @param rli
  * @returns
  */
-const deployOrJoin = async (providers: CounterProviders, rli: Interface): Promise<DeployedCounterContract | null> => {
+const deployOrJoin = async (
+  providers: CounterProviders,
+  rli: Interface,
+): Promise<DeployedCounterContract | null> => {
   while (true) {
     const choice = await rli.question(DEPLOY_OR_JOIN_QUESTION);
     switch (choice) {
-      case '1':
+      case "1":
         // deployメソッドを呼び出す
         return await api.deploy(providers, { privateCounter: 0 });
-      case '2':
+      case "2":
         // joinメソッドを呼び出す
         return await join(providers, rli);
-      case '3':
-        logger.info('Exiting...');
+      case "3":
+        logger.info("Exiting...");
         return null;
       default:
         logger.error(`Invalid choice: ${choice}`);
@@ -82,7 +97,10 @@ const deployOrJoin = async (providers: CounterProviders, rli: Interface): Promis
   }
 };
 
-const mainLoop = async (providers: CounterProviders, rli: Interface): Promise<void> => {
+const mainLoop = async (
+  providers: CounterProviders,
+  rli: Interface,
+): Promise<void> => {
   const counterContract = await deployOrJoin(providers, rli);
   if (counterContract === null) {
     return;
@@ -90,14 +108,14 @@ const mainLoop = async (providers: CounterProviders, rli: Interface): Promise<vo
   while (true) {
     const choice = await rli.question(MAIN_LOOP_QUESTION);
     switch (choice) {
-      case '1':
+      case "1":
         await api.increment(counterContract);
         break;
-      case '2':
+      case "2":
         await api.displayCounterValue(providers, counterContract);
         break;
-      case '3':
-        logger.info('Exiting...');
+      case "3":
+        logger.info("Exiting...");
         return;
       default:
         logger.error(`Invalid choice: ${choice}`);
@@ -111,10 +129,13 @@ const mainLoop = async (providers: CounterProviders, rli: Interface): Promise<vo
  * @param rli
  * @returns
  */
-const buildWalletFromSeed = async (config: Config, rli: Interface): Promise<Wallet & Resource> => {
-  const seed = await rli.question('Enter your wallet seed: ');
+const buildWalletFromSeed = async (
+  config: Config,
+  rli: Interface,
+): Promise<Wallet & Resource> => {
+  const seed = await rli.question("Enter your wallet seed: ");
   // buildWalletAndWaitForFundsメソッドを呼び出す
-  return await api.buildWalletAndWaitForFunds(config, seed, '');
+  return await api.buildWalletAndWaitForFunds(config, seed, "");
 };
 
 const WALLET_LOOP_QUESTION = `
@@ -130,20 +151,27 @@ Which would you like to do? `;
  * @param rli
  * @returns
  */
-const buildWallet = async (config: Config, rli: Interface): Promise<(Wallet & Resource) | null> => {
+const buildWallet = async (
+  config: Config,
+  rli: Interface,
+): Promise<(Wallet & Resource) | null> => {
   if (config instanceof StandaloneConfig) {
     // スタンドアロンネットワークの場合、ジェネシスマイントウォレットから資金を取得
-    return await api.buildWalletAndWaitForFunds(config, GENESIS_MINT_WALLET_SEED, '');
+    return await api.buildWalletAndWaitForFunds(
+      config,
+      GENESIS_MINT_WALLET_SEED,
+      "",
+    );
   }
   while (true) {
     const choice = await rli.question(WALLET_LOOP_QUESTION);
     switch (choice) {
-      case '1':
+      case "1":
         return await api.buildFreshWallet(config);
-      case '2':
+      case "2":
         return await buildWalletFromSeed(config, rli);
-      case '3':
-        logger.info('Exiting...');
+      case "3":
+        logger.info("Exiting...");
         return null;
       default:
         logger.error(`Invalid choice: ${choice}`);
@@ -151,13 +179,17 @@ const buildWallet = async (config: Config, rli: Interface): Promise<(Wallet & Re
   }
 };
 
-const mapContainerPort = (env: StartedDockerComposeEnvironment, url: string, containerName: string) => {
+const mapContainerPort = (
+  env: StartedDockerComposeEnvironment,
+  url: string,
+  containerName: string,
+) => {
   const mappedUrl = new URL(url);
   const container = env.getContainer(containerName);
 
   mappedUrl.port = String(container.getFirstMappedPort());
 
-  return mappedUrl.toString().replace(/\/+$/, '');
+  return mappedUrl.toString().replace(/\/+$/, "");
 };
 
 /**
@@ -166,7 +198,11 @@ const mapContainerPort = (env: StartedDockerComposeEnvironment, url: string, con
  * @param _logger
  * @param dockerEnv
  */
-export const run = async (config: Config, _logger: Logger, dockerEnv?: DockerComposeEnvironment): Promise<void> => {
+export const run = async (
+  config: Config,
+  _logger: Logger,
+  dockerEnv?: DockerComposeEnvironment,
+): Promise<void> => {
   logger = _logger;
   api.setLogger(_logger);
   const rli = createInterface({ input, output, terminal: true });
@@ -175,10 +211,18 @@ export const run = async (config: Config, _logger: Logger, dockerEnv?: DockerCom
     env = await dockerEnv.up();
 
     if (config instanceof StandaloneConfig) {
-      config.indexer = mapContainerPort(env, config.indexer, 'counter-indexer');
-      config.indexerWS = mapContainerPort(env, config.indexerWS, 'counter-indexer');
-      config.node = mapContainerPort(env, config.node, 'counter-node');
-      config.proofServer = mapContainerPort(env, config.proofServer, 'counter-proof-server');
+      config.indexer = mapContainerPort(env, config.indexer, "counter-indexer");
+      config.indexerWS = mapContainerPort(
+        env,
+        config.indexerWS,
+        "counter-indexer",
+      );
+      config.node = mapContainerPort(env, config.node, "counter-node");
+      config.proofServer = mapContainerPort(
+        env,
+        config.proofServer,
+        "counter-proof-server",
+      );
     }
   }
   // シードからウォレットインスタンスを生成
@@ -192,7 +236,7 @@ export const run = async (config: Config, _logger: Logger, dockerEnv?: DockerCom
   } catch (e) {
     if (e instanceof Error) {
       logger.error(`Found error '${e.message}'`);
-      logger.info('Exiting...');
+      logger.info("Exiting...");
       logger.debug(`${e.stack}`);
     } else {
       throw e;
@@ -214,7 +258,7 @@ export const run = async (config: Config, _logger: Logger, dockerEnv?: DockerCom
         try {
           if (env !== undefined) {
             await env.down();
-            logger.info('Goodbye');
+            logger.info("Goodbye");
           }
         } catch (e) {
           logger.error(`Error shutting down docker environment: ${e}`);

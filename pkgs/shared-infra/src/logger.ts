@@ -20,4 +20,3 @@ export function createAppLogger(cfg: LoggerConfig): Logger {
   };
   return pino(options);
 }
-

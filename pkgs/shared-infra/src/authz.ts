@@ -1,4 +1,9 @@
-export type Role = "system" | "operator" | "auditor" | "participant" | "external";
+export type Role =
+  | "system"
+  | "operator"
+  | "auditor"
+  | "participant"
+  | "external";
 
 export type Scope =
   | "request:submit"
@@ -54,13 +59,16 @@ const ROLE_SCOPE_MAP: Record<Role, Scope[]> = {
     "ops:invoke",
   ],
   auditor: ["request:read", "audit:read", "audit:export", "ops:metrics:read"],
-  participant: ["request:submit", "request:read", "consent:write", "consent:revoke"],
+  participant: [
+    "request:submit",
+    "request:read",
+    "consent:write",
+    "consent:revoke",
+  ],
   external: ["request:submit"],
 };
 
-const ALL_SCOPES: Set<Scope> = new Set(
-  Object.values(ROLE_SCOPE_MAP).flat(),
-);
+const ALL_SCOPES: Set<Scope> = new Set(Object.values(ROLE_SCOPE_MAP).flat());
 
 const normalizeRole = (value: string | undefined): Role | null => {
   if (!value) return null;
@@ -94,7 +102,11 @@ export const authorizeScopes = (
     ? normalizeRole(context.roleText)
     : fallbackRole;
   if (role === null) {
-    return { allowed: false, reason: "ROLE_UNSUPPORTED", missingScopes: requiredScopes };
+    return {
+      allowed: false,
+      reason: "ROLE_UNSUPPORTED",
+      missingScopes: requiredScopes,
+    };
   }
   const baseScopes: Set<Scope> = new Set(ROLE_SCOPE_MAP[role]);
   const extraScopes: Scope[] = parseScopes(context.scopesText);
@@ -128,4 +140,3 @@ export const loadAuthzContextFromEnv = (
   scopesText: process.env.NEXTMED_SCOPES,
   fallbackRole,
 });
-

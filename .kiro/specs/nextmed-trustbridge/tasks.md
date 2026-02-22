@@ -27,16 +27,16 @@
   - 認可、検証、状態更新、監査イベント記録を一連で処理する。
   - _Requirements: 1.1, 1.2, 1.5, 4.1_
 
-- [ ] 2.4 フロントエンド基盤を Next.js (App Router) に統一する
-- [ ] 2.4.1 Vite 残骸を撤去し、`app/` 単一ルーター構成へ収束させる
+- [x] 2.4 フロントエンド基盤を Next.js (App Router) に統一する
+- [x] 2.4.1 Vite 残骸を撤去し、`app/` 単一ルーター構成へ収束させる
   - `src/pages` と `app` の競合を解消し、`next build` が失敗しない構成へ修正する。
   - `vite.config.ts`、`index.html`、未使用 `src/*` の扱いを決定し、移行完了条件を明文化する。
   - _Requirements: 3.4, 5.3_
-- [ ] 2.4.2 v0 モック画面を Next.js ルーティング設計に正式取り込みする
+- [x] 2.4.2 v0 モック画面を Next.js ルーティング設計に正式取り込みする
   - `/`, `/hospital`, `/patient`, `/appendix` の画面責務とデータ境界を整理する。
   - クライアント状態を必要最小限に限定し、Server/Client Component 境界を定義する。
   - _Requirements: 1.1, 2.1, 3.4_
-- [ ] 2.4.3 Frontend 品質ゲートを Next.js 向けに再定義する
+- [x] 2.4.3 Frontend 品質ゲートを Next.js 向けに再定義する
   - lint/build/test の実行コマンドを Next.js 前提に統一し、CI と同じ検証手順に合わせる。
   - `typescript.ignoreBuildErrors` の撤廃方針と適用タイミングを決める。
   - _Requirements: 3.1, 3.4, 5.4_

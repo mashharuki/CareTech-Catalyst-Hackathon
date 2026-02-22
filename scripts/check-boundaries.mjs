@@ -58,7 +58,10 @@ const NODE_BUILTINS = new Set([
 const PACKAGES = [
   { name: "my-app", dir: resolve(__dirname, "..", "pkgs", "backend") },
   { name: "cli", dir: resolve(__dirname, "..", "pkgs", "cli") },
-  { name: "shared-infra", dir: resolve(__dirname, "..", "pkgs", "shared-infra") },
+  {
+    name: "shared-infra",
+    dir: resolve(__dirname, "..", "pkgs", "shared-infra"),
+  },
   { name: "frontend", dir: resolve(__dirname, "..", "pkgs", "frontend") },
   { name: "contract", dir: resolve(__dirname, "..", "pkgs", "contract") },
 ];
@@ -94,7 +97,8 @@ function listSourceFiles(rootDir) {
 
 function extractImports(code) {
   const imports = [];
-  const importRe = /import(?:[\s\w*{},]+from\s*)?["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)/g;
+  const importRe =
+    /import(?:[\s\w*{},]+from\s*)?["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)/g;
   const requireRe = /require\s*\(\s*["']([^"']+)\s*["']\)/g;
 
   for (const m of code.matchAll(importRe)) {

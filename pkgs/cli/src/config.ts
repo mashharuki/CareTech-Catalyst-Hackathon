@@ -13,14 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NetworkId, setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-import path from 'node:path';
-import { buildProviderConfig } from 'shared-infra/network';
-export const currentDir = path.resolve(new URL(import.meta.url).pathname, '..');
+import {
+  NetworkId,
+  setNetworkId,
+} from "@midnight-ntwrk/midnight-js-network-id";
+import path from "node:path";
+import { buildProviderConfig } from "shared-infra/network";
+export const currentDir = path.resolve(new URL(import.meta.url).pathname, "..");
 
 export const contractConfig = {
-  privateStateStoreName: 'counter-private-state',
-  zkConfigPath: path.resolve(currentDir, '..', '..', 'contract', 'src', 'managed', 'counter'),
+  privateStateStoreName: "counter-private-state",
+  zkConfigPath: path.resolve(
+    currentDir,
+    "..",
+    "..",
+    "contract",
+    "src",
+    "managed",
+    "counter",
+  ),
 };
 
 export interface Config {
@@ -32,49 +43,73 @@ export interface Config {
 }
 
 export class TestnetLocalConfig implements Config {
-  logDir: string = path.resolve(currentDir, '..', 'logs', 'testnet-local', `${new Date().toISOString()}.log`);
+  logDir: string = path.resolve(
+    currentDir,
+    "..",
+    "logs",
+    "testnet-local",
+    `${new Date().toISOString()}.log`,
+  );
   indexer: string;
   indexerWS: string;
   node: string;
   proofServer: string;
   constructor() {
-    const cfg = buildProviderConfig('testnet-local');
+    const cfg = buildProviderConfig("testnet-local");
     this.indexer = cfg.indexer;
     this.indexerWS = cfg.indexerWS;
     this.node = cfg.node;
     this.proofServer = cfg.proofServer;
-    setNetworkId(cfg.networkId === 'TestNet' ? NetworkId.TestNet : NetworkId.Undeployed);
+    setNetworkId(
+      cfg.networkId === "TestNet" ? NetworkId.TestNet : NetworkId.Undeployed,
+    );
   }
 }
 
 export class StandaloneConfig implements Config {
-  logDir: string = path.resolve(currentDir, '..', 'logs', 'standalone', `${new Date().toISOString()}.log`);
+  logDir: string = path.resolve(
+    currentDir,
+    "..",
+    "logs",
+    "standalone",
+    `${new Date().toISOString()}.log`,
+  );
   indexer: string;
   indexerWS: string;
   node: string;
   proofServer: string;
   constructor() {
-    const cfg = buildProviderConfig('standalone');
+    const cfg = buildProviderConfig("standalone");
     this.indexer = cfg.indexer;
     this.indexerWS = cfg.indexerWS;
     this.node = cfg.node;
     this.proofServer = cfg.proofServer;
-    setNetworkId(cfg.networkId === 'TestNet' ? NetworkId.TestNet : NetworkId.Undeployed);
+    setNetworkId(
+      cfg.networkId === "TestNet" ? NetworkId.TestNet : NetworkId.Undeployed,
+    );
   }
 }
 
 export class TestnetRemoteConfig implements Config {
-  logDir: string = path.resolve(currentDir, '..', 'logs', 'testnet-remote', `${new Date().toISOString()}.log`);
+  logDir: string = path.resolve(
+    currentDir,
+    "..",
+    "logs",
+    "testnet-remote",
+    `${new Date().toISOString()}.log`,
+  );
   indexer: string;
   indexerWS: string;
   node: string;
   proofServer: string;
   constructor() {
-    const cfg = buildProviderConfig('testnet-remote');
+    const cfg = buildProviderConfig("testnet-remote");
     this.indexer = cfg.indexer;
     this.indexerWS = cfg.indexerWS;
     this.node = cfg.node;
     this.proofServer = cfg.proofServer;
-    setNetworkId(cfg.networkId === 'TestNet' ? NetworkId.TestNet : NetworkId.Undeployed);
+    setNetworkId(
+      cfg.networkId === "TestNet" ? NetworkId.TestNet : NetworkId.Undeployed,
+    );
   }
 }

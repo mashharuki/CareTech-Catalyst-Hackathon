@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ArrowLeft, Shield, Database, Scale, Coins, ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Shield,
+  Database,
+  Scale,
+  Coins,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-}
+};
 
 export default function AppendixPage() {
   return (
@@ -25,7 +32,9 @@ export default function AppendixPage() {
           <div className="h-4 w-px bg-border" />
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">TrustBridge</span>
+            <span className="text-sm font-medium text-foreground">
+              TrustBridge
+            </span>
             <span className="text-xs text-muted-foreground">/ Appendix</span>
           </div>
         </div>
@@ -40,7 +49,9 @@ export default function AppendixPage() {
           <h1 className="text-2xl font-medium tracking-tight text-foreground">
             Technical Appendix
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">審査員向け Q&A 付録資料</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            審査員向け Q&A 付録資料
+          </p>
         </motion.div>
 
         <div className="flex flex-col gap-10">
@@ -57,8 +68,12 @@ export default function AppendixPage() {
                 <Database className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-medium text-foreground">図解1：データ分離構造</h2>
-                <p className="text-xs text-muted-foreground">Data Separation Architecture</p>
+                <h2 className="text-base font-medium text-foreground">
+                  図解1：データ分離構造
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Data Separation Architecture
+                </p>
               </div>
             </div>
 
@@ -67,11 +82,21 @@ export default function AppendixPage() {
               <div className="flex-1 rounded-xl border border-border bg-secondary/30 p-5">
                 <div className="mb-3 flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-amber-400" />
-                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Off-Chain / 病院内</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Off-Chain / 病院内
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {["生の医療データ (DICOM, HL7)", "患者個人情報", "診療録・検査結果", "病院内サーバーに暗号化保存"].map((item, i) => (
-                    <div key={i} className="rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground">
+                  {[
+                    "生の医療データ (DICOM, HL7)",
+                    "患者個人情報",
+                    "診療録・検査結果",
+                    "病院内サーバーに暗号化保存",
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-border bg-card px-3 py-2 text-xs text-foreground"
+                    >
                       {item}
                     </div>
                   ))}
@@ -88,11 +113,21 @@ export default function AppendixPage() {
               <div className="flex-1 rounded-xl border border-primary/20 bg-primary/5 p-5">
                 <div className="mb-3 flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-primary" />
-                  <span className="text-xs font-medium uppercase tracking-wider text-primary">On-Chain / Midnight</span>
+                  <span className="text-xs font-medium uppercase tracking-wider text-primary">
+                    On-Chain / Midnight
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  {["データアクセス権トークン", "ハッシュ値（改ざん検知）", "取引履歴・同意ログ", "インセンティブ配分記録"].map((item, i) => (
-                    <div key={i} className="rounded-lg border border-primary/20 bg-card px-3 py-2 text-xs text-foreground">
+                  {[
+                    "データアクセス権トークン",
+                    "ハッシュ値（改ざん検知）",
+                    "取引履歴・同意ログ",
+                    "インセンティブ配分記録",
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-primary/20 bg-card px-3 py-2 text-xs text-foreground"
+                    >
                       {item}
                     </div>
                   ))}
@@ -114,8 +149,12 @@ export default function AppendixPage() {
                 <Scale className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-medium text-foreground">図解2：法規制マッピング</h2>
-                <p className="text-xs text-muted-foreground">Regulatory Compliance Matrix</p>
+                <h2 className="text-base font-medium text-foreground">
+                  図解2：法規制マッピング
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Regulatory Compliance Matrix
+                </p>
               </div>
             </div>
 
@@ -123,25 +162,69 @@ export default function AppendixPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">要件</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">次世代医療基盤法</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">GDPR</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">TrustBridge対応</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
+                      要件
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">
+                      次世代医療基盤法
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">
+                      GDPR
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground">
+                      TrustBridge対応
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { req: "匿名加工", jp: "必須", gdpr: "必須", tb: "AI自動匿名化" },
-                    { req: "本人同意", jp: "オプトアウト可", gdpr: "明示的同意", tb: "ブロックチェーン同意ログ" },
-                    { req: "データポータビリティ", jp: "規定なし", gdpr: "義務", tb: "Self-Sovereign ID" },
-                    { req: "利用目的の制限", jp: "必須", gdpr: "必須", tb: "スマートコントラクト制御" },
-                    { req: "第三者提供の記録", jp: "必須", gdpr: "必須", tb: "オンチェーン取引ログ" },
+                    {
+                      req: "匿名加工",
+                      jp: "必須",
+                      gdpr: "必須",
+                      tb: "AI自動匿名化",
+                    },
+                    {
+                      req: "本人同意",
+                      jp: "オプトアウト可",
+                      gdpr: "明示的同意",
+                      tb: "ブロックチェーン同意ログ",
+                    },
+                    {
+                      req: "データポータビリティ",
+                      jp: "規定なし",
+                      gdpr: "義務",
+                      tb: "Self-Sovereign ID",
+                    },
+                    {
+                      req: "利用目的の制限",
+                      jp: "必須",
+                      gdpr: "必須",
+                      tb: "スマートコントラクト制御",
+                    },
+                    {
+                      req: "第三者提供の記録",
+                      jp: "必須",
+                      gdpr: "必須",
+                      tb: "オンチェーン取引ログ",
+                    },
                   ].map((row, i) => (
-                    <tr key={i} className="border-b border-border last:border-0">
-                      <td className="px-4 py-3 text-xs font-medium text-foreground">{row.req}</td>
-                      <td className="px-4 py-3 text-center text-xs text-muted-foreground">{row.jp}</td>
-                      <td className="px-4 py-3 text-center text-xs text-muted-foreground">{row.gdpr}</td>
-                      <td className="px-4 py-3 text-center text-xs font-medium text-primary">{row.tb}</td>
+                    <tr
+                      key={i}
+                      className="border-b border-border last:border-0"
+                    >
+                      <td className="px-4 py-3 text-xs font-medium text-foreground">
+                        {row.req}
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs text-muted-foreground">
+                        {row.jp}
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs text-muted-foreground">
+                        {row.gdpr}
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs font-medium text-primary">
+                        {row.tb}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -162,8 +245,12 @@ export default function AppendixPage() {
                 <Coins className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-medium text-foreground">図解3：経済圏エコシステム</h2>
-                <p className="text-xs text-muted-foreground">Token Flow - Win-Win-Win Ecosystem</p>
+                <h2 className="text-base font-medium text-foreground">
+                  図解3：経済圏エコシステム
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Token Flow - Win-Win-Win Ecosystem
+                </p>
               </div>
             </div>
 
@@ -173,7 +260,9 @@ export default function AppendixPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <span className="text-lg">H</span>
                 </div>
-                <h3 className="text-sm font-medium text-foreground">医療機関</h3>
+                <h3 className="text-sm font-medium text-foreground">
+                  医療機関
+                </h3>
                 <p className="text-xs text-muted-foreground">AI診断で効率化</p>
                 <div className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
                   診療効率 +40%
@@ -193,7 +282,9 @@ export default function AppendixPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <span className="text-lg">P</span>
                 </div>
-                <h3 className="text-sm font-medium text-foreground">個人（患者）</h3>
+                <h3 className="text-sm font-medium text-foreground">
+                  個人（患者）
+                </h3>
                 <p className="text-xs text-muted-foreground">データを収益化</p>
                 <div className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
                   報酬 $TRUST
@@ -213,8 +304,12 @@ export default function AppendixPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <span className="text-lg">R</span>
                 </div>
-                <h3 className="text-sm font-medium text-foreground">研究機関</h3>
-                <p className="text-xs text-muted-foreground">高品質データを取得</p>
+                <h3 className="text-sm font-medium text-foreground">
+                  研究機関
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  高品質データを取得
+                </p>
                 <div className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
                   データ品質 +60%
                 </div>
@@ -223,7 +318,8 @@ export default function AppendixPage() {
 
             <div className="mt-6 rounded-xl bg-secondary/30 p-4 text-center">
               <p className="text-xs text-muted-foreground">
-                Midnight Protocolを基盤として、データ提供者（患者）、データ活用者（研究機関・製薬会社）、
+                Midnight
+                Protocolを基盤として、データ提供者（患者）、データ活用者（研究機関・製薬会社）、
                 医療機関の3者がそれぞれ価値を享受するトークンエコノミーを実現
               </p>
             </div>
@@ -246,5 +342,5 @@ export default function AppendixPage() {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

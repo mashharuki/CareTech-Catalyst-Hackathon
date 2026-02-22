@@ -1,58 +1,58 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { AlertTriangle, ChevronRight, Search } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { AlertTriangle, ChevronRight, Search } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export interface Patient {
-  id: string
-  name: string
-  age: number
-  gender: string
-  riskScore: number
-  condition: string
-  lastVisit: string
-  department: string
+  id: string;
+  name: string;
+  age: number;
+  gender: string;
+  riskScore: number;
+  condition: string;
+  lastVisit: string;
+  department: string;
 }
 
 const riskColor = (score: number) => {
-  if (score >= 80) return "text-red-600"
-  if (score >= 50) return "text-amber-500"
-  return "text-emerald-500"
-}
+  if (score >= 80) return "text-red-600";
+  if (score >= 50) return "text-amber-500";
+  return "text-emerald-500";
+};
 
 const riskBg = (score: number) => {
-  if (score >= 80) return "bg-red-50 text-red-600"
-  if (score >= 50) return "bg-amber-50 text-amber-600"
-  return "bg-emerald-50 text-emerald-600"
-}
+  if (score >= 80) return "bg-red-50 text-red-600";
+  if (score >= 50) return "bg-amber-50 text-amber-600";
+  return "bg-emerald-50 text-emerald-600";
+};
 
 const riskBadge = (score: number) => {
-  if (score >= 80) return "destructive" as const
-  if (score >= 50) return "secondary" as const
-  return "outline" as const
-}
+  if (score >= 80) return "destructive" as const;
+  if (score >= 50) return "secondary" as const;
+  return "outline" as const;
+};
 
 export function PatientList({
   patients,
   selectedId,
   onSelect,
 }: {
-  patients: Patient[]
-  selectedId: string | null
-  onSelect: (id: string) => void
+  patients: Patient[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
 }) {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
 
   const filtered = patients
     .filter(
       (p) =>
         p.name.includes(search) ||
         p.condition.includes(search) ||
-        p.department.includes(search)
+        p.department.includes(search),
     )
-    .sort((a, b) => b.riskScore - a.riskScore)
+    .sort((a, b) => b.riskScore - a.riskScore);
 
   return (
     <div className="flex h-full flex-col">
@@ -108,7 +108,9 @@ export function PatientList({
 
             <div className="flex-1 overflow-hidden">
               <div className="flex items-center gap-1.5">
-                <span className="truncate text-xs font-medium">{patient.name}</span>
+                <span className="truncate text-xs font-medium">
+                  {patient.name}
+                </span>
                 {patient.riskScore >= 80 && (
                   <AlertTriangle className="h-3 w-3 flex-shrink-0 text-red-500" />
                 )}
@@ -122,9 +124,11 @@ export function PatientList({
           </motion.button>
         ))}
         {filtered.length === 0 && (
-          <p className="py-8 text-center text-xs text-muted-foreground">該当する患者が見つかりません</p>
+          <p className="py-8 text-center text-xs text-muted-foreground">
+            該当する患者が見つかりません
+          </p>
         )}
       </div>
     </div>
-  )
+  );
 }

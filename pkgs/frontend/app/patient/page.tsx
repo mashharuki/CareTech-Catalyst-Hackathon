@@ -1,28 +1,34 @@
-"use client"
+"use client";
 
-import { useState, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, Shield, Wallet } from "lucide-react"
-import Link from "next/link"
-import { DataUpload } from "@/components/patient/data-upload"
-import { TrustExchange } from "@/components/patient/trust-exchange"
-import { BlockchainConsole, type BlockchainEvent } from "@/components/patient/blockchain-console"
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Shield, Wallet } from "lucide-react";
+import Link from "next/link";
+import { DataUpload } from "@/components/patient/data-upload";
+import { TrustExchange } from "@/components/patient/trust-exchange";
+import {
+  BlockchainConsole,
+  type BlockchainEvent,
+} from "@/components/patient/blockchain-console";
 
 export default function PatientPage() {
-  const [uploadComplete, setUploadComplete] = useState(false)
-  const [balance, setBalance] = useState(2450)
-  const [events, setEvents] = useState<BlockchainEvent[]>([])
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [balance, setBalance] = useState(2450);
+  const [events, setEvents] = useState<BlockchainEvent[]>([]);
 
-  const pushEvent = useCallback((event: Omit<BlockchainEvent, "id" | "timestamp">) => {
-    setEvents((prev) => [
-      ...prev,
-      {
-        ...event,
-        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        timestamp: new Date(),
-      },
-    ])
-  }, [])
+  const pushEvent = useCallback(
+    (event: Omit<BlockchainEvent, "id" | "timestamp">) => {
+      setEvents((prev) => [
+        ...prev,
+        {
+          ...event,
+          id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          timestamp: new Date(),
+        },
+      ]);
+    },
+    [],
+  );
 
   const handleUploadStage = useCallback(
     (stage: "scanning" | "masked") => {
@@ -31,64 +37,65 @@ export default function PatientPage() {
           type: "info",
           label: "UPLOAD",
           message: "File received - initiating AI anonymization pipeline",
-        })
+        });
         pushEvent({
           type: "hash",
           label: "MIDNIGHT",
           message: `Creating shielded transaction context...`,
-        })
+        });
       }
       if (stage === "masked") {
         pushEvent({
           type: "success",
           label: "AI",
-          message: "Anonymization complete - PII fields redacted with ZKP commitment",
-        })
+          message:
+            "Anonymization complete - PII fields redacted with ZKP commitment",
+        });
         pushEvent({
           type: "hash",
           label: "MIDNIGHT",
           message: `Data hash committed: 0x${Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
-        })
+        });
         pushEvent({
           type: "success",
           label: "MIDNIGHT",
           message: "Shielded state stored on Midnight ledger",
-        })
+        });
       }
     },
-    [pushEvent]
-  )
+    [pushEvent],
+  );
 
   const handleUploadComplete = useCallback(() => {
-    setUploadComplete(true)
+    setUploadComplete(true);
     pushEvent({
       type: "success",
       label: "WALLET",
       message: "Data NFT minted - asset ready for marketplace listing",
-    })
-  }, [pushEvent])
+    });
+  }, [pushEvent]);
 
   const handleTransaction = useCallback(
     (reward: number, orgName: string) => {
-      setBalance((prev) => prev + reward)
+      setBalance((prev) => prev + reward);
       pushEvent({
         type: "info",
         label: "EXCHANGE",
         message: `Trade initiated with ${orgName}`,
-      })
+      });
       pushEvent({
         type: "hash",
         label: "MIDNIGHT",
         message: `ZK-proof generated for data access policy`,
-      })
+      });
       pushEvent({
         type: "success",
         label: "TRUST",
         message: `+${reward.toLocaleString()} $TRUST credited to wallet`,
-      })
+      });
     },
-    [pushEvent]
-  )
+    [pushEvent],
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -105,8 +112,12 @@ export default function PatientPage() {
           <div className="h-4 w-px bg-border" />
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">TrustBridge</span>
-            <span className="text-xs text-muted-foreground">/ Data Ownership Portal</span>
+            <span className="text-sm font-medium text-foreground">
+              TrustBridge
+            </span>
+            <span className="text-xs text-muted-foreground">
+              / Data Ownership Portal
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 text-xs text-foreground">
@@ -165,5 +176,5 @@ export default function PatientPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

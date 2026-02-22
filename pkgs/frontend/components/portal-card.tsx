@@ -1,25 +1,21 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useState } from "react"
-import { Building2, User, ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Building2, User, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-export function PortalCard({
-  type,
-}: {
-  type: "hospital" | "patient"
-}) {
-  const [isHovered, setIsHovered] = useState(false)
+export function PortalCard({ type }: { type: "hospital" | "patient" }) {
+  const [isHovered, setIsHovered] = useState(false);
 
-  const isHospital = type === "hospital"
-  const title = isHospital ? "For Medical Institutions" : "For Patients"
-  const subtitle = isHospital ? "病院向けポータル" : "個人向けポータル"
+  const isHospital = type === "hospital";
+  const title = isHospital ? "For Medical Institutions" : "For Patients";
+  const subtitle = isHospital ? "病院向けポータル" : "個人向けポータル";
   const description = isHospital
     ? "AI診断補助ワークフローで、医療の質と効率を向上"
-    : "あなたの医療データを安全に管理・活用"
-  const href = isHospital ? "/hospital" : "/patient"
-  const Icon = isHospital ? Building2 : User
+    : "あなたの医療データを安全に管理・活用";
+  const href = isHospital ? "/hospital" : "/patient";
+  const Icon = isHospital ? Building2 : User;
 
   return (
     <Link href={href} className="block flex-1">
@@ -27,7 +23,10 @@ export function PortalCard({
         className="relative flex h-full min-h-[420px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-border bg-card p-10 text-card-foreground transition-shadow"
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
-        whileHover={{ scale: 1.02, boxShadow: "0 20px 60px -15px rgba(0,0,0,0.08)" }}
+        whileHover={{
+          scale: 1.02,
+          boxShadow: "0 20px 60px -15px rgba(0,0,0,0.08)",
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
         {/* Background gradient on hover */}
@@ -47,13 +46,19 @@ export function PortalCard({
           animate={{ y: isHovered ? -4 : 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
-          <div className={`flex h-20 w-20 items-center justify-center rounded-2xl ${isHospital ? "bg-primary/10 text-primary" : "bg-accent/15 text-accent-foreground"}`}>
+          <div
+            className={`flex h-20 w-20 items-center justify-center rounded-2xl ${isHospital ? "bg-primary/10 text-primary" : "bg-accent/15 text-accent-foreground"}`}
+          >
             <Icon className="h-10 w-10" strokeWidth={1.5} />
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-2xl font-medium tracking-tight text-foreground">{title}</h2>
-            <p className="text-sm font-light text-muted-foreground">{subtitle}</p>
+            <h2 className="text-2xl font-medium tracking-tight text-foreground">
+              {title}
+            </h2>
+            <p className="text-sm font-light text-muted-foreground">
+              {subtitle}
+            </p>
           </div>
 
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
@@ -72,5 +77,5 @@ export function PortalCard({
         </motion.div>
       </motion.div>
     </Link>
-  )
+  );
 }

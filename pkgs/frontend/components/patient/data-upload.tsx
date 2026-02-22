@@ -1,62 +1,62 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { useState, useRef } from "react"
-import { Upload, ScanLine, ShieldCheck, Lock, FileText, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
+import { Upload, ScanLine, ShieldCheck, Lock, FileText, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-type Stage = "idle" | "scanning" | "masked"
+type Stage = "idle" | "scanning" | "masked";
 
 interface DataUploadProps {
-  onStageChange: (stage: "scanning" | "masked") => void
-  onComplete: () => void
+  onStageChange: (stage: "scanning" | "masked") => void;
+  onComplete: () => void;
 }
 
 export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
-  const [stage, setStage] = useState<Stage>("idle")
-  const [fileName, setFileName] = useState<string | null>(null)
-  const [isDragOver, setIsDragOver] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [stage, setStage] = useState<Stage>("idle");
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFile = (name: string) => {
-    setFileName(name)
-    setStage("scanning")
-    onStageChange("scanning")
+    setFileName(name);
+    setStage("scanning");
+    onStageChange("scanning");
 
     setTimeout(() => {
-      setStage("masked")
-      onStageChange("masked")
-    }, 3000)
-  }
+      setStage("masked");
+      onStageChange("masked");
+    }, 3000);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) processFile(file.name)
-  }
+    const file = e.target.files?.[0];
+    if (file) processFile(file.name);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    const file = e.dataTransfer.files?.[0]
-    if (file) processFile(file.name)
-  }
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file.name);
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(true)
-  }
+    e.preventDefault();
+    setIsDragOver(true);
+  };
 
-  const handleDragLeave = () => setIsDragOver(false)
+  const handleDragLeave = () => setIsDragOver(false);
 
   const handleDemoUpload = () => {
-    processFile("sample_checkup_2026-02.dcm")
-  }
+    processFile("sample_checkup_2026-02.dcm");
+  };
 
   const handleReset = () => {
-    setStage("idle")
-    setFileName(null)
-    if (fileInputRef.current) fileInputRef.current.value = ""
-  }
+    setStage("idle");
+    setFileName(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6">
@@ -88,7 +88,9 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
 
       <div
         className={`relative min-h-[280px] overflow-hidden rounded-xl border-2 border-dashed transition-colors ${
-          isDragOver ? "border-primary bg-primary/5" : "border-border bg-secondary/20"
+          isDragOver
+            ? "border-primary bg-primary/5"
+            : "border-border bg-secondary/20"
         }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -111,7 +113,9 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
               </motion.div>
               <div className="text-center">
                 <p className="text-sm font-medium text-foreground">
-                  {isDragOver ? "Drop your file here" : "Drag & drop your medical file"}
+                  {isDragOver
+                    ? "Drop your file here"
+                    : "Drag & drop your medical file"}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   PDF, DICOM, CSV, HL7 formats supported
@@ -187,7 +191,11 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
               <div className="relative w-full max-w-sm rounded-lg border border-border bg-card p-5 font-mono text-xs leading-6 text-foreground">
                 {[
                   { label: "Patient", value: "Yamada Taro", delay: 0.2 },
-                  { label: "Address", value: "Shibuya-ku, Tokyo 1-2-3", delay: 0.4 },
+                  {
+                    label: "Address",
+                    value: "Shibuya-ku, Tokyo 1-2-3",
+                    delay: 0.4,
+                  },
                   { label: "DOB", value: "1985-03-15", delay: 0.6 },
                   { label: "Phone", value: "090-1234-5678", delay: 0.8 },
                 ].map((field) => (
@@ -206,7 +214,9 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
                     </span>
                   </p>
                 ))}
-                <p className="mt-2 text-emerald-700">Result: Blood Glucose 126mg/dL</p>
+                <p className="mt-2 text-emerald-700">
+                  Result: Blood Glucose 126mg/dL
+                </p>
                 <p className="text-emerald-700">HbA1c: 6.8%</p>
               </div>
 
@@ -237,5 +247,5 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 }
