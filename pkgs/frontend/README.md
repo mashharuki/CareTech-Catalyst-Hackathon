@@ -13,10 +13,18 @@ pnpm --filter frontend start
 
 ## ルーティング方針
 
-- `/` : ポータル選択画面
-- `/hospital` : 医療機関向け画面
-- `/patient` : 患者向け画面
-- `/appendix` : 審査員向け技術補足
+- `/` : `/ja` へリダイレクト
+- `/{locale}` : ポータル選択画面 (`locale = ja | en`)
+- `/{locale}/hospital` : 医療機関向け画面
+- `/{locale}/patient` : 患者向け画面
+- `/{locale}/appendix` : 審査員向け技術補足
+- `/{locale}/ops` : 運用ダッシュボード
+
+## 多言語方針
+
+- 対応言語は日本語 (`ja`) / 英語 (`en`) の2言語。
+- ロケールはURLプレフィックス方式で管理する。
+- ロケール未指定URLは middleware で既定言語 (`ja`) へリダイレクトする。
 
 ## 実装ルール
 

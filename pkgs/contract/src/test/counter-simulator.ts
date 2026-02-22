@@ -71,4 +71,17 @@ export class CounterSimulator {
     ).context;
     return ledger(this.circuitContext.transactionContext.state);
   }
+
+  /**
+   * anchorメソッドを呼び出すメソッド
+   * @param hashField 公開台帳に保存するハッシュ値（Field）
+   * @returns 実行後のLedger
+   */
+  public anchor(hashField: bigint): Ledger {
+    this.circuitContext = this.contract.impureCircuits.anchor(
+      this.circuitContext,
+      hashField,
+    ).context;
+    return ledger(this.circuitContext.transactionContext.state);
+  }
 }

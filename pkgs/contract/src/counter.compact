@@ -3,8 +3,17 @@ import CompactStandardLibrary;
 
 // public state (公開台帳に保存される状態)
 export ledger round: Counter;
+export ledger lastAnchor: Field;
 
 // transition function changing public state (公開状態を変更する関数)
 export circuit increment(): [] {
+    round.increment(1);
+}
+
+// 監査アンカー用の最小エントリポイント
+// 現段階では公開カウンタを1増分することで「アンカー操作」を記録する
+// 将来的に Bytes 等の公開状態を追加し、ハッシュ要約を格納する形へ拡張可能
+export circuit anchor(hash: Field): [] {
+    lastAnchor = disclose(hash);
     round.increment(1);
 }

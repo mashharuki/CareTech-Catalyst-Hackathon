@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NextMed TrustBridge - MVP Demo",
   description:
-    "医療の信頼を、価値に変える架け橋。AI診断補助とデータ主権取引プラットフォーム。",
+    "A bridge that turns trusted healthcare into shared value. AI-assisted diagnosis and data sovereignty exchange platform.",
 };
 
 export const viewport: Viewport = {

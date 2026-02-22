@@ -10,8 +10,14 @@ import {
   BlockchainConsole,
   type BlockchainEvent,
 } from "@/components/patient/blockchain-console";
+import { useI18n } from "@/lib/i18n/use-i18n";
+
+function randomHash() {
+  return `0x${Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+}
 
 export default function PatientPage() {
+  const { locale, messages } = useI18n();
   const [uploadComplete, setUploadComplete] = useState(false);
   const [balance, setBalance] = useState(2450);
   const [events, setEvents] = useState<BlockchainEvent[]>([]);
@@ -36,34 +42,33 @@ export default function PatientPage() {
         pushEvent({
           type: "info",
           label: "UPLOAD",
-          message: "File received - initiating AI anonymization pipeline",
+          message: messages.patientPage.uploadStart,
         });
         pushEvent({
           type: "hash",
           label: "MIDNIGHT",
-          message: `Creating shielded transaction context...`,
+          message: messages.patientPage.txContext,
         });
       }
       if (stage === "masked") {
         pushEvent({
           type: "success",
           label: "AI",
-          message:
-            "Anonymization complete - PII fields redacted with ZKP commitment",
+          message: messages.patientPage.anonymized,
         });
         pushEvent({
           type: "hash",
           label: "MIDNIGHT",
-          message: `Data hash committed: 0x${Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+          message: `${messages.patientPage.hashCommitted} ${randomHash()}`,
         });
         pushEvent({
           type: "success",
           label: "MIDNIGHT",
-          message: "Shielded state stored on Midnight ledger",
+          message: messages.patientPage.ledgerStored,
         });
       }
     },
-    [pushEvent],
+    [messages.patientPage, pushEvent],
   );
 
   const handleUploadComplete = useCallback(() => {
@@ -71,9 +76,9 @@ export default function PatientPage() {
     pushEvent({
       type: "success",
       label: "WALLET",
-      message: "Data NFT minted - asset ready for marketplace listing",
+      message: messages.patientPage.nftMinted,
     });
-  }, [pushEvent]);
+  }, [messages.patientPage.nftMinted, pushEvent]);
 
   const handleTransaction = useCallback(
     (reward: number, orgName: string) => {
@@ -81,42 +86,41 @@ export default function PatientPage() {
       pushEvent({
         type: "info",
         label: "EXCHANGE",
-        message: `Trade initiated with ${orgName}`,
+        message: `${messages.patientPage.tradeInitiated} ${orgName}`,
       });
       pushEvent({
         type: "hash",
         label: "MIDNIGHT",
-        message: `ZK-proof generated for data access policy`,
+        message: messages.patientPage.zkGenerated,
       });
       pushEvent({
         type: "success",
         label: "TRUST",
-        message: `+${reward.toLocaleString()} $TRUST credited to wallet`,
+        message: `+${reward.toLocaleString()} ${messages.patientPage.credited}`,
       });
     },
-    [pushEvent],
+    [messages.patientPage, pushEvent],
   );
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      {/* Header */}
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-3">
         <div className="flex items-center gap-4">
           <Link
-            href="/"
+            href={`/${locale}`}
             className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back
+            {messages.common.back}
           </Link>
           <div className="h-4 w-px bg-border" />
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-foreground">
-              TrustBridge
+              {messages.common.trustBridge}
             </span>
             <span className="text-xs text-muted-foreground">
-              / Data Ownership Portal
+              / {messages.patientPage.subtitle}
             </span>
           </div>
         </div>
@@ -128,15 +132,13 @@ export default function PatientPage() {
             animate={{ scale: 1 }}
             className="font-medium"
           >
-            {balance.toLocaleString()}
+            {balance.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
           </motion.span>
           <span className="text-muted-foreground">$TRUST</span>
         </div>
       </header>
 
-      {/* Main content */}
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 p-4 lg:flex-row lg:p-6">
-        {/* Left column: Upload + Exchange */}
         <div className="flex flex-1 flex-col gap-6">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -162,7 +164,6 @@ export default function PatientPage() {
           </AnimatePresence>
         </div>
 
-        {/* Right column: Blockchain Console (sticky) */}
         <div className="w-full shrink-0 lg:w-96">
           <div className="sticky top-6">
             <motion.div

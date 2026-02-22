@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Brain,
   CheckCircle2,
@@ -13,6 +13,81 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Patient } from "./patient-list";
+import { useI18n } from "@/lib/i18n/use-i18n";
+
+type Result = {
+  marker: { top: string; left: string };
+  label: string;
+  confidence: number;
+  category: string;
+  detail: string;
+};
+
+function getAiResults(isJa: boolean): Record<string, Result> {
+  if (isJa) {
+    return {
+      p1: {
+        marker: { top: "35%", left: "55%" },
+        label: "肺結節の疑い",
+        confidence: 89,
+        category: "Lung-RADS 4B",
+        detail: "右肺上葉に約12mmの結節影を検出。CT精密検査を推奨。",
+      },
+      p2: {
+        marker: { top: "55%", left: "45%" },
+        label: "腎皮質菲薄化",
+        confidence: 82,
+        category: "CKD Stage 3b",
+        detail: "両側腎エコーにて皮質菲薄化を確認。eGFR低下傾向。",
+      },
+      p5: {
+        marker: { top: "38%", left: "48%" },
+        label: "心房細動",
+        confidence: 91,
+        category: "AF Persistent",
+        detail: "Holter心電図にて持続性心房細動を確認。CHA2DS2-VAScスコア4点。",
+      },
+      default: {
+        marker: { top: "40%", left: "50%" },
+        label: "異常所見なし",
+        confidence: 95,
+        category: "Normal",
+        detail: "画像解析の結果、明らかな異常所見は認められません。",
+      },
+    };
+  }
+
+  return {
+    p1: {
+      marker: { top: "35%", left: "55%" },
+      label: "Suspected pulmonary nodule",
+      confidence: 89,
+      category: "Lung-RADS 4B",
+      detail: "Detected a ~12mm nodule in right upper lung lobe. Contrast CT recommended.",
+    },
+    p2: {
+      marker: { top: "55%", left: "45%" },
+      label: "Renal cortical thinning",
+      confidence: 82,
+      category: "CKD Stage 3b",
+      detail: "Bilateral renal cortical thinning observed with declining eGFR trend.",
+    },
+    p5: {
+      marker: { top: "38%", left: "48%" },
+      label: "Atrial fibrillation",
+      confidence: 91,
+      category: "AF Persistent",
+      detail: "Persistent AF identified on Holter ECG with CHA2DS2-VASc score 4.",
+    },
+    default: {
+      marker: { top: "40%", left: "50%" },
+      label: "No abnormal finding",
+      confidence: 95,
+      category: "Normal",
+      detail: "No significant abnormality detected in imaging analysis.",
+    },
+  };
+}
 
 export function AIViewer({
   patient,
@@ -21,6 +96,7 @@ export function AIViewer({
   patient: Patient | null;
   onAdopt: () => void;
 }) {
+  const { messages, locale } = useI18n();
   const [scanning, setScanning] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{
@@ -30,107 +106,7 @@ export function AIViewer({
   } | null>(null);
   const [dragOver, setDragOver] = useState(false);
 
-  // AI inference result that changes based on patient
-  const aiResults: Record<
-    string,
-    {
-      marker: { top: string; left: string };
-      label: string;
-      confidence: number;
-      category: string;
-      detail: string;
-      plan: string;
-    }
-  > = {
-    p1: {
-      marker: { top: "35%", left: "55%" },
-      label: "肺結節の疑い",
-      confidence: 89,
-      category: "Lung-RADS 4B",
-      detail: "右肺上葉に約12mmの結節影を検出。CT精密検査を推奨。",
-      plan: "胸部CT精密検査を予約。呼吸器外科コンサルト依頼。",
-    },
-    p2: {
-      marker: { top: "55%", left: "45%" },
-      label: "腎皮質菲薄化",
-      confidence: 82,
-      category: "CKD Stage 3b",
-      detail: "両側腎エコーにて皮質菲薄化を確認。eGFR低下傾向。",
-      plan: "腎臓内科紹介。SGLT2阻害薬追加検討。",
-    },
-    p3: {
-      marker: { top: "40%", left: "50%" },
-      label: "左室肥大",
-      confidence: 76,
-      category: "LVH Grade II",
-      detail: "心エコーにて左室壁厚13mm。拡張障害の所見あり。",
-      plan: "降圧薬調整。6ヶ月後フォローアップ心エコー。",
-    },
-    p5: {
-      marker: { top: "38%", left: "48%" },
-      label: "心房細動",
-      confidence: 91,
-      category: "AF Persistent",
-      detail: "Holter心電図にて持続性心房細動を確認。CHA2DS2-VAScスコア4点。",
-      plan: "抗凝固療法開始。カテーテルアブレーション検討。",
-    },
-    p6: {
-      marker: { top: "60%", left: "52%" },
-      label: "肝硬変所見",
-      confidence: 85,
-      category: "Child-Pugh B",
-      detail: "腹部CTにて肝表面不整・脾腫を確認。腹水少量あり。",
-      plan: "肝臓専門医紹介。利尿薬調整。",
-    },
-    p7: {
-      marker: { top: "30%", left: "50%" },
-      label: "甲状腺結節",
-      confidence: 73,
-      category: "TIRADS 4",
-      detail: "頸部エコーにて右葉に15mm低エコー結節。石灰化あり。",
-      plan: "穿刺吸引細胞診を予約。",
-    },
-    p8: {
-      marker: { top: "42%", left: "58%" },
-      label: "胸膜肥厚",
-      confidence: 68,
-      category: "Asbestosis疑い",
-      detail: "胸部CTにて両側胸膜肥厚。職業歴の確認要。",
-      plan: "労災申請検討。6ヶ月毎CT。",
-    },
-    p9: {
-      marker: { top: "50%", left: "45%" },
-      label: "膵管拡張",
-      confidence: 79,
-      category: "IPMN疑い",
-      detail: "腹部MRIにて主膵管拡張(5mm)。分枝型IPMN疑い。",
-      plan: "EUS精査。CA19-9フォロー。",
-    },
-    p10: {
-      marker: { top: "35%", left: "42%" },
-      label: "冠動脈石灰化",
-      confidence: 88,
-      category: "Agatston 450",
-      detail: "心臓CTにて高度冠動脈石灰化。3枝に分布。",
-      plan: "負荷心筋シンチ。循環器内科受診。",
-    },
-    p11: {
-      marker: { top: "65%", left: "50%" },
-      label: "椎間板ヘルニア",
-      confidence: 83,
-      category: "L4/5 Grade III",
-      detail: "腰椎MRIにてL4/5椎間板後方突出。馬尾神経圧排あり。",
-      plan: "整形外科紹介。保存療法開始。",
-    },
-    default: {
-      marker: { top: "40%", left: "50%" },
-      label: "異常所見なし",
-      confidence: 95,
-      category: "Normal",
-      detail: "画像解析の結果、明らかな異常所見は認められません。",
-      plan: "定期健診を継続してください。",
-    },
-  };
+  const aiResults = useMemo(() => getAiResults(locale === "ja"), [locale]);
 
   const currentResult = patient
     ? (aiResults[patient.id] ?? aiResults.default)
@@ -155,7 +131,6 @@ export function AIViewer({
         ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
         : `${(file.size / 1024).toFixed(0)} KB`;
     setUploadedFile({ name: file.name, size: sizeStr, type: file.type });
-    // Re-trigger scan
     setScanning(true);
     setScanComplete(false);
     const timer = setTimeout(() => {
@@ -191,11 +166,9 @@ export function AIViewer({
           className="mb-4 h-10 w-10 text-muted-foreground/40"
           strokeWidth={1.5}
         />
-        <p className="text-sm text-muted-foreground">
-          患者を選択してAI診断ビューワーを起動
-        </p>
+        <p className="text-sm text-muted-foreground">{messages.aiViewer.emptyTitle}</p>
         <p className="mt-1.5 text-xs text-muted-foreground/60">
-          PDF/DICOM画像のアップロードにも対応しています
+          {messages.aiViewer.emptySub}
         </p>
       </div>
     );
@@ -203,7 +176,6 @@ export function AIViewer({
 
   return (
     <div className="flex h-full flex-col gap-3">
-      {/* DICOM-like viewer */}
       <div
         className={`relative flex-1 overflow-hidden rounded-2xl border bg-card transition-colors ${
           dragOver ? "border-primary bg-primary/5" : "border-border"
@@ -215,12 +187,11 @@ export function AIViewer({
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
       >
-        {/* Header bar */}
         <div className="absolute top-0 right-0 left-0 z-10 flex items-center justify-between border-b border-border/50 bg-card/80 px-4 py-2 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <Brain className="h-4 w-4 text-primary" />
             <span className="text-xs font-medium text-foreground">
-              AI-Driven Viewer
+              {messages.aiViewer.viewerTitle}
             </span>
             {uploadedFile && (
               <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] text-primary">
@@ -229,10 +200,9 @@ export function AIViewer({
             )}
           </div>
           <div className="flex items-center gap-3">
-            {/* Upload button */}
             <label className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[10px] text-muted-foreground transition-colors hover:bg-secondary">
               <Upload className="h-3 w-3" />
-              PDF / 画像
+              {messages.aiViewer.uploadLabel}
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.dcm"
@@ -247,7 +217,7 @@ export function AIViewer({
                 animate={{ opacity: 1 }}
               >
                 <Loader2 className="h-3 w-3 animate-spin" />
-                <span>Scanning...</span>
+                <span>{messages.aiViewer.scanning}</span>
               </motion.div>
             )}
             {scanComplete && (
@@ -257,13 +227,12 @@ export function AIViewer({
                 animate={{ opacity: 1, scale: 1 }}
               >
                 <CheckCircle2 className="h-3 w-3" />
-                <span>Complete</span>
+                <span>{messages.aiViewer.complete}</span>
               </motion.div>
             )}
           </div>
         </div>
 
-        {/* Drag overlay */}
         <AnimatePresence>
           {dragOver && (
             <motion.div
@@ -274,7 +243,7 @@ export function AIViewer({
             >
               <Upload className="mb-3 h-8 w-8 text-primary" />
               <p className="text-sm font-medium text-primary">
-                ドロップしてAI解析を開始
+                {messages.aiViewer.dropTitle}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 PDF, DICOM, JPEG, PNG
@@ -283,9 +252,7 @@ export function AIViewer({
           )}
         </AnimatePresence>
 
-        {/* Image area */}
         <div className="relative flex h-full min-h-[280px] items-center justify-center bg-secondary/20 pt-10">
-          {/* Grid overlay */}
           <div
             className="pointer-events-none absolute inset-0"
             style={{
@@ -297,7 +264,6 @@ export function AIViewer({
             }}
           />
 
-          {/* Uploaded file preview badge */}
           {uploadedFile && (
             <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-lg border border-border bg-card/90 px-3 py-1.5 backdrop-blur-sm">
               {uploadedFile.type === "application/pdf" ? (
@@ -322,7 +288,6 @@ export function AIViewer({
             </div>
           )}
 
-          {/* Organ illustration */}
           <svg
             viewBox="0 0 200 180"
             className="h-48 w-48 text-muted-foreground/20"
@@ -341,7 +306,6 @@ export function AIViewer({
             <path d="M100 110 L125 125" />
           </svg>
 
-          {/* Scan line animation */}
           <AnimatePresence>
             {scanning && (
               <motion.div
@@ -353,7 +317,6 @@ export function AIViewer({
             )}
           </AnimatePresence>
 
-          {/* Detection marker */}
           <AnimatePresence>
             {scanComplete && currentResult && (
               <motion.div
@@ -377,7 +340,7 @@ export function AIViewer({
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
                 <div className="absolute -bottom-1 left-full ml-2 whitespace-nowrap rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-[10px] text-red-700 shadow-sm">
-                  {currentResult.label}（確信度 {currentResult.confidence}%）
+                  {currentResult.label} ({messages.aiViewer.confidence} {currentResult.confidence}%)
                 </div>
               </motion.div>
             )}
@@ -385,7 +348,6 @@ export function AIViewer({
         </div>
       </div>
 
-      {/* AI Result + Adopt */}
       <AnimatePresence>
         {scanComplete && currentResult && (
           <motion.div
@@ -401,7 +363,7 @@ export function AIViewer({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">
-                    AI推論結果
+                    {messages.aiViewer.inferenceResult}
                   </p>
                   <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-muted-foreground">
                     {currentResult.category}
@@ -417,7 +379,7 @@ export function AIViewer({
               size="sm"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              AI結果を採用してカルテ作成
+              {messages.aiViewer.adoptButton}
             </Button>
           </motion.div>
         )}

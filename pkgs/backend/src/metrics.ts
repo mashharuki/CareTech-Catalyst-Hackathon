@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { authorizeScopes, type Scope } from "shared-infra/authz";
 import { getOutboxStats } from "./outbox.js";
 import { getAuditStats, getRecentAuditEvents } from "./audit.js";
+import { getProviderConfigFromEnv } from "shared-infra/network";
 
 type Stat = {
   path: string;
@@ -79,6 +80,39 @@ export function buildOpsRouter(): Hono {
     const recentAudit = getRecentAuditEvents(5);
     return c.json({ endpoints: items, outbox, audit, recentAudit });
   });
+  router.get("/chain", async (c) => {
+    const denied = authzOrResponse(c, ["ops:metrics:read"]);
+    if (denied) return denied;
+    const cfg = getProviderConfigFromEnv();
+    const began = Date.now();
+    let indexerOk = false;
+    let indexerStatus = 0;
+    try {
+      const r = await fetch(cfg.indexer, { method: "GET" });
+      indexerStatus = r.status;
+      indexerOk = indexerStatus < 500;
+    } catch {
+      indexerOk = false;
+    }
+    const indexerLatencyMs = Date.now() - began;
+    // contract package availability check
+    let contractOk = false;
+    try {
+      const mod: any = await import("contract");
+      // instantiate contract class if available
+      if (mod && mod.Counter && mod.Counter.Contract && mod.witnesses) {
+        // eslint-disable-next-line no-new
+        new mod.Counter.Contract(mod.witnesses);
+        contractOk = true;
+      }
+    } catch {
+      contractOk = false;
+    }
+    return c.json({
+      provider: { indexer: cfg.indexer, node: cfg.node, proofServer: cfg.proofServer },
+      indexer: { ok: indexerOk, status: indexerStatus, latencyMs: indexerLatencyMs },
+      contract: { ok: contractOk },
+    });
+  });
   return router;
 }
-

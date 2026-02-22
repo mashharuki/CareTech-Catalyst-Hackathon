@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef } from "react";
 import { Upload, ScanLine, ShieldCheck, Lock, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 type Stage = "idle" | "scanning" | "masked";
 
@@ -13,6 +14,7 @@ interface DataUploadProps {
 }
 
 export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
+  const { messages } = useI18n();
   const [stage, setStage] = useState<Stage>("idle");
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -64,7 +66,7 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-medium text-foreground">
-            Step 1: Data Upload & AI Anonymization
+            {messages.dataUpload.title}
           </h3>
         </div>
         {stage === "masked" && (
@@ -73,7 +75,7 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
             className="flex items-center gap-1 text-[10px] text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="h-3 w-3" />
-            Reset
+            {messages.dataUpload.reset}
           </button>
         )}
       </div>
@@ -113,12 +115,10 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
               </motion.div>
               <div className="text-center">
                 <p className="text-sm font-medium text-foreground">
-                  {isDragOver
-                    ? "Drop your file here"
-                    : "Drag & drop your medical file"}
+                  {isDragOver ? messages.dataUpload.dropHere : messages.dataUpload.dragDrop}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  PDF, DICOM, CSV, HL7 formats supported
+                  {messages.dataUpload.formats}
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -128,15 +128,15 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
                   onClick={() => fileInputRef.current?.click()}
                   className="h-9 text-xs"
                 >
-                  Browse Files
+                  {messages.dataUpload.browse}
                 </Button>
-                <span className="text-xs text-muted-foreground">or</span>
+                <span className="text-xs text-muted-foreground">{messages.dataUpload.or}</span>
                 <Button
                   size="sm"
                   onClick={handleDemoUpload}
                   className="h-9 bg-primary text-xs text-primary-foreground hover:bg-primary/90"
                 >
-                  Use Demo File
+                  {messages.dataUpload.useDemo}
                 </Button>
               </div>
             </motion.div>
@@ -169,7 +169,7 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
               </div>
               <div className="flex items-center gap-2 text-xs text-primary">
                 <ScanLine className="h-4 w-4 animate-pulse" />
-                <span>AI anonymization in progress...</span>
+                <span>{messages.dataUpload.anonymizing}</span>
               </div>
             </motion.div>
           )}
@@ -227,7 +227,7 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
                 transition={{ delay: 1 }}
               >
                 <ShieldCheck className="h-4 w-4" />
-                Anonymization Complete - ZK Commitment on Midnight
+                {messages.dataUpload.complete}
               </motion.div>
 
               <motion.div
@@ -239,7 +239,7 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
                   onClick={onComplete}
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
-                  Proceed to Data Exchange
+                  {messages.dataUpload.proceed}
                 </Button>
               </motion.div>
             </motion.div>

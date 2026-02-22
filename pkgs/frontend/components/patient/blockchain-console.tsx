@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Terminal, Shield, ExternalLink } from "lucide-react";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 export interface BlockchainEvent {
   id: string;
@@ -18,7 +19,7 @@ function generateHash() {
   for (let i = 0; i < 12; i++) {
     hash += chars[Math.floor(Math.random() * 16)];
   }
-  return hash + "...";
+  return `${hash}...`;
 }
 
 export function BlockchainConsole({
@@ -28,11 +29,10 @@ export function BlockchainConsole({
   balance: number;
   events: BlockchainEvent[];
 }) {
+  const { locale, messages } = useI18n();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [blockHeight, setBlockHeight] = useState(1_482_910);
   const [peers, setPeers] = useState(47);
-
-  // Simulate Midnight network heartbeat (ambient logs)
   const [ambientLogs, setAmbientLogs] = useState<BlockchainEvent[]>([]);
 
   useEffect(() => {
@@ -64,7 +64,6 @@ export function BlockchainConsole({
     return () => clearInterval(interval);
   }, [blockHeight, peers]);
 
-  // Merge ambient + real events, sorted by time
   const allLogs = [...ambientLogs, ...events]
     .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
     .slice(-40);
@@ -109,12 +108,11 @@ export function BlockchainConsole({
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-medium text-foreground">
-            Blockchain Provenance
+            {messages.blockchain.title}
           </h3>
         </div>
         <div className="flex items-center gap-2">
@@ -124,41 +122,37 @@ export function BlockchainConsole({
             transition={{ duration: 2, repeat: Infinity }}
           />
           <span className="text-[10px] text-muted-foreground">
-            Midnight Connected
+            {messages.blockchain.connected}
           </span>
         </div>
       </div>
 
-      {/* Network status */}
       <div className="grid grid-cols-3 gap-2">
         <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-center">
           <p className="font-mono text-xs font-medium text-foreground">
-            {blockHeight.toLocaleString()}
+            {blockHeight.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
           </p>
-          <p className="text-[9px] text-muted-foreground">Block Height</p>
+          <p className="text-[9px] text-muted-foreground">{messages.blockchain.blockHeight}</p>
         </div>
         <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-center">
-          <p className="font-mono text-xs font-medium text-foreground">
-            {peers}
-          </p>
-          <p className="text-[9px] text-muted-foreground">Peers</p>
+          <p className="font-mono text-xs font-medium text-foreground">{peers}</p>
+          <p className="text-[9px] text-muted-foreground">{messages.blockchain.peers}</p>
         </div>
         <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-center">
           <p className="font-mono text-xs font-medium text-emerald-600">
             {events.length}
           </p>
-          <p className="text-[9px] text-muted-foreground">Your Txns</p>
+          <p className="text-[9px] text-muted-foreground">{messages.blockchain.yourTxns}</p>
         </div>
       </div>
 
-      {/* Console */}
       <div
         ref={scrollRef}
         className="h-64 overflow-auto rounded-xl bg-foreground/[0.03] p-3 font-mono text-[10px] leading-5"
       >
         {allLogs.length === 0 && (
           <div className="flex h-full items-center justify-center text-muted-foreground">
-            Waiting for blockchain events...
+            {messages.blockchain.waiting}
           </div>
         )}
         <AnimatePresence initial={false}>
@@ -170,16 +164,14 @@ export function BlockchainConsole({
               className={`flex gap-1 ${typeColor(log.type)}`}
             >
               <span className="flex-shrink-0 text-muted-foreground/50">
-                {log.timestamp.toLocaleTimeString("en-US", {
+                {log.timestamp.toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US", {
                   hour12: false,
                   hour: "2-digit",
                   minute: "2-digit",
                   second: "2-digit",
                 })}
               </span>
-              <span
-                className={`flex-shrink-0 font-semibold ${labelColor(log.label)}`}
-              >
+              <span className={`flex-shrink-0 font-semibold ${labelColor(log.label)}`}>
                 [{log.label}]
               </span>
               <span>{log.message}</span>
@@ -188,11 +180,10 @@ export function BlockchainConsole({
         </AnimatePresence>
       </div>
 
-      {/* Balance */}
       <div className="flex items-center justify-between rounded-xl border border-border bg-secondary/30 px-4 py-3">
         <div className="flex items-center gap-2">
           <Shield className="h-3.5 w-3.5 text-primary" />
-          <span className="text-xs text-muted-foreground">Wallet Balance</span>
+          <span className="text-xs text-muted-foreground">{messages.blockchain.walletBalance}</span>
         </div>
         <motion.span
           key={balance}
@@ -200,12 +191,11 @@ export function BlockchainConsole({
           animate={{ scale: 1 }}
           className="text-lg font-medium text-foreground"
         >
-          {balance.toLocaleString()}{" "}
+          {balance.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} {" "}
           <span className="text-xs text-muted-foreground">$TRUST</span>
         </motion.span>
       </div>
 
-      {/* Midnight link */}
       <a
         href="https://midnight.network"
         target="_blank"
@@ -213,7 +203,7 @@ export function BlockchainConsole({
         className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground transition-colors hover:text-foreground"
       >
         <ExternalLink className="h-3 w-3" />
-        Powered by Midnight Protocol - Data Protection by Design
+        {messages.blockchain.footer}
       </a>
     </div>
   );

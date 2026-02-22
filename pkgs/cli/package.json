@@ -18,7 +18,8 @@
     "start-testnet-remote": "npm run build && npm run testnet-remote",
     "start-testnet-remote-ps": "npm run build && npm run testnet-remote-ps",
     "deploy": "node --experimental-specifier-resolution=node --loader ts-node/esm scripts/deploy.ts",
-    "increment": "node --experimental-specifier-resolution=node --loader ts-node/esm scripts/increment.ts"
+    "increment": "node --experimental-specifier-resolution=node --loader ts-node/esm scripts/increment.ts",
+    "anchor": "node --experimental-specifier-resolution=node --loader ts-node/esm scripts/anchor.ts"
   },
   "dependencies": {
     "shared-infra": "workspace:*",

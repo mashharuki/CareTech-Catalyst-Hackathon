@@ -17,6 +17,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.9
         version: 1.19.9(hono@4.12.1)
+      contract:
+        specifier: workspace:*
+        version: link:../contract
       hono:
         specifier: ^4.12.1
         version: 4.12.1
@@ -149,6 +152,9 @@ importers:
       '@eslint/js':
         specifier: ^9.38.0
         version: 9.39.3
+      '@midnight-ntwrk/midnight-js-network-id':
+        specifier: 2.0.2
+        version: 2.0.2
       '@types/node':
         specifier: ^24.9.2
         version: 24.10.13

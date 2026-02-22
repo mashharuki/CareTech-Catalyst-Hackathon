@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 type Job = {
   id: string;
@@ -18,6 +19,7 @@ type Job = {
 };
 
 export default function JobsTable({ initial }: { initial: Job[] }) {
+  const { messages } = useI18n();
   const [jobs, setJobs] = useState<Job[]>(initial);
   const [pending, start] = useTransition();
   const BASE =
@@ -43,20 +45,20 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
   return (
     <div className="rounded-xl border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
-        <div className="text-sm font-medium text-foreground">Outbox Jobs</div>
+        <div className="text-sm font-medium text-foreground">{messages.jobsTable.title}</div>
         <div className="text-xs text-muted-foreground">
-          {pending ? "Updating..." : ""}
+          {pending ? messages.jobsTable.updating : ""}
         </div>
       </div>
       <div className="overflow-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-xs text-muted-foreground">
-              <th className="px-3 py-2 text-left">Job</th>
-              <th className="px-3 py-2 text-left">Status</th>
-              <th className="px-3 py-2 text-left">Attempts</th>
-              <th className="px-3 py-2 text-left">Tracking</th>
-              <th className="px-3 py-2 text-right">Action</th>
+              <th className="px-3 py-2 text-left">{messages.jobsTable.job}</th>
+              <th className="px-3 py-2 text-left">{messages.jobsTable.status}</th>
+              <th className="px-3 py-2 text-left">{messages.jobsTable.attempts}</th>
+              <th className="px-3 py-2 text-left">{messages.jobsTable.tracking}</th>
+              <th className="px-3 py-2 text-right">{messages.jobsTable.action}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +76,7 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
                       disabled={pending}
                       onClick={() => retry(j.id)}
                     >
-                      Retry
+                      {messages.jobsTable.retry}
                     </button>
                   ) : (
                     <span className="text-xs text-muted-foreground">-</span>
@@ -88,7 +90,7 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
                   className="px-3 py-6 text-center text-xs text-muted-foreground"
                   colSpan={5}
                 >
-                  No jobs
+                  {messages.jobsTable.noJobs}
                 </td>
               </tr>
             )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Store,
   FlaskConical,
@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 interface DataListing {
   id: string;
@@ -39,80 +40,123 @@ interface DataListing {
   policyDetail: string;
 }
 
-const listings: DataListing[] = [
-  {
-    id: "l1",
-    title: "Phase III Clinical Trial - Diabetes Treatment Data",
-    organization: "Global Pharma Corp.",
-    reward: 5000,
-    type: "sell",
-    description:
-      "Anonymized blood panel data needed for a next-generation diabetes drug trial. Your data helps accelerate drug approval and save lives.",
-    icon: FlaskConical,
-    tags: ["Blood Panel", "Diabetes", "Phase III"],
-    buyers: 342,
-    rating: 4.8,
-    accessLevel: "partial",
-    duration: "12 months",
-    urgency: "high",
-    policyDetail:
-      "Smart contract enforces: read-only access, no re-identification, auto-deletion after trial period. ZK-proof verified on Midnight.",
-  },
-  {
-    id: "l2",
-    title: "AI Diagnostic Model Training - Medical Imaging",
-    organization: "University of Tokyo Hospital",
-    reward: 1200,
-    type: "donate",
-    description:
-      "Contribute anonymized imaging data to improve AI-based diagnostic accuracy. Donors receive bonus $TRUST tokens and research credits.",
-    icon: GraduationCap,
-    tags: ["Imaging", "AI Training", "Academic"],
-    buyers: 1289,
-    rating: 4.9,
-    accessLevel: "aggregated",
-    duration: "Perpetual",
-    urgency: "normal",
-    policyDetail:
-      "Aggregated-only access, no individual records exposed. Data mixed into federated learning pool. Midnight attestation included.",
-  },
-  {
-    id: "l3",
-    title: "Population Health Analytics - Insurance Risk Model",
-    organization: "NexLife Insurance Ltd.",
-    reward: 3500,
-    type: "license",
-    description:
-      "License your de-identified health metrics for actuarial modeling. Revenue-sharing model pays recurring $TRUST per quarter.",
-    icon: Building,
-    tags: ["Insurance", "Analytics", "Recurring"],
-    buyers: 87,
-    rating: 4.3,
-    accessLevel: "partial",
-    duration: "Quarterly renewal",
-    urgency: "low",
-    policyDetail:
-      "Partial access to anonymized metrics only. Strict no-discrimination clause enforced via smart contract. Opt-out anytime.",
-  },
-  {
-    id: "l4",
-    title: "Rare Disease Gene Expression Study",
-    organization: "BioGenesis Research Institute",
-    reward: 8000,
-    type: "sell",
-    description:
-      "High-value rare disease genomic data request. Premium compensation reflects the rarity and research significance of matching data profiles.",
-    icon: FlaskConical,
-    tags: ["Genomics", "Rare Disease", "Premium"],
-    buyers: 23,
-    rating: 5.0,
-    accessLevel: "full",
-    duration: "24 months",
-    urgency: "high",
-    policyDetail:
-      "Full anonymized dataset access. Triple-layer encryption with Midnight shielded transactions. Mandatory ethics board review.",
-  },
-];
+function buildListings(isJa: boolean): DataListing[] {
+  if (isJa) {
+    return [
+      {
+        id: "l1",
+        title: "第III相治験 - 糖尿病治療データ",
+        organization: "Global Pharma Corp.",
+        reward: 5000,
+        type: "sell",
+        description:
+          "次世代糖尿病治療薬の治験に必要な匿名化血液データ。承認プロセスを加速し患者価値に還元します。",
+        icon: FlaskConical,
+        tags: ["血液検査", "糖尿病", "Phase III"],
+        buyers: 342,
+        rating: 4.8,
+        accessLevel: "partial",
+        duration: "12か月",
+        urgency: "high",
+        policyDetail:
+          "スマートコントラクトで読み取り専用・再識別禁止・試験終了後自動削除を強制。MidnightでZK証明済み。",
+      },
+      {
+        id: "l2",
+        title: "AI診断モデル学習 - 医療画像",
+        organization: "University of Tokyo Hospital",
+        reward: 1200,
+        type: "donate",
+        description:
+          "匿名化画像データの提供でAI診断精度を向上。提供者にはボーナス$TRUSTと研究貢献クレジットを付与。",
+        icon: GraduationCap,
+        tags: ["医療画像", "AI学習", "アカデミア"],
+        buyers: 1289,
+        rating: 4.9,
+        accessLevel: "aggregated",
+        duration: "恒久",
+        urgency: "normal",
+        policyDetail:
+          "集計データのみアクセス可能。個票は公開されず、連合学習プールへ統合。Midnight認証付き。",
+      },
+      {
+        id: "l3",
+        title: "保険リスクモデル - 集団健康分析",
+        organization: "NexLife Insurance Ltd.",
+        reward: 3500,
+        type: "license",
+        description:
+          "匿名化健康指標を保険数理モデルへライセンス提供。四半期ごとに継続報酬が発生するレベニューシェア方式。",
+        icon: Building,
+        tags: ["保険", "分析", "継続収益"],
+        buyers: 87,
+        rating: 4.3,
+        accessLevel: "partial",
+        duration: "四半期更新",
+        urgency: "low",
+        policyDetail:
+          "匿名化指標の部分アクセスのみ。差別利用禁止条項をスマートコントラクトで強制。いつでもオプトアウト可能。",
+      },
+    ];
+  }
+
+  return [
+    {
+      id: "l1",
+      title: "Phase III Clinical Trial - Diabetes Treatment Data",
+      organization: "Global Pharma Corp.",
+      reward: 5000,
+      type: "sell",
+      description:
+        "Anonymized blood panel data needed for a next-generation diabetes drug trial.",
+      icon: FlaskConical,
+      tags: ["Blood Panel", "Diabetes", "Phase III"],
+      buyers: 342,
+      rating: 4.8,
+      accessLevel: "partial",
+      duration: "12 months",
+      urgency: "high",
+      policyDetail:
+        "Read-only access, no re-identification, and auto-deletion after trial period. ZK-proof verified on Midnight.",
+    },
+    {
+      id: "l2",
+      title: "AI Diagnostic Model Training - Medical Imaging",
+      organization: "University of Tokyo Hospital",
+      reward: 1200,
+      type: "donate",
+      description:
+        "Contribute anonymized imaging data to improve AI-based diagnostic accuracy.",
+      icon: GraduationCap,
+      tags: ["Imaging", "AI Training", "Academic"],
+      buyers: 1289,
+      rating: 4.9,
+      accessLevel: "aggregated",
+      duration: "Perpetual",
+      urgency: "normal",
+      policyDetail:
+        "Aggregated-only access. No individual records exposed. Midnight attestation included.",
+    },
+    {
+      id: "l3",
+      title: "Population Health Analytics - Insurance Risk Model",
+      organization: "NexLife Insurance Ltd.",
+      reward: 3500,
+      type: "license",
+      description:
+        "License de-identified health metrics for actuarial modeling with recurring rewards.",
+      icon: Building,
+      tags: ["Insurance", "Analytics", "Recurring"],
+      buyers: 87,
+      rating: 4.3,
+      accessLevel: "partial",
+      duration: "Quarterly renewal",
+      urgency: "low",
+      policyDetail:
+        "Partial access to anonymized metrics only with strict no-discrimination smart-contract clause.",
+    },
+  ];
+}
 
 type TxState = "idle" | "auth" | "zkproof" | "signing" | "complete";
 
@@ -121,12 +165,15 @@ export function TrustExchange({
 }: {
   onTransaction: (reward: number, orgName: string) => void;
 }) {
+  const { messages, locale } = useI18n();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [txState, setTxState] = useState<TxState>("idle");
   const [filter, setFilter] = useState<"all" | "sell" | "donate" | "license">(
     "all",
   );
+
+  const listings = useMemo(() => buildListings(locale === "ja"), [locale]);
 
   const filtered =
     filter === "all" ? listings : listings.filter((l) => l.type === filter);
@@ -161,52 +208,49 @@ export function TrustExchange({
   };
 
   const typeLabel = (type: string) => {
-    if (type === "sell") return "Sell";
-    if (type === "donate") return "Donate";
-    return "License";
+    if (type === "sell") return messages.trustExchange.sell;
+    if (type === "donate") return messages.trustExchange.donate;
+    return messages.trustExchange.license;
   };
 
   return (
     <div className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Store className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-medium text-foreground">
-            Step 2: Trust Exchange - Data Marketplace
+            {messages.trustExchange.title}
           </h3>
         </div>
         <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
           <ShieldCheck className="h-3 w-3 text-emerald-500" />
-          Midnight Protected
+          {messages.trustExchange.protected}
         </div>
       </div>
 
-      {/* Summary stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
-          <p className="text-lg font-medium text-foreground">
-            {listings.length}
-          </p>
-          <p className="text-[10px] text-muted-foreground">Active Requests</p>
+          <p className="text-lg font-medium text-foreground">{listings.length}</p>
+          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.activeRequests}</p>
         </div>
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
           <p className="text-lg font-medium text-foreground">
-            {listings.reduce((s, l) => s + l.buyers, 0).toLocaleString()}
+            {listings.reduce((s, l) => s + l.buyers, 0).toLocaleString(
+              locale === "ja" ? "ja-JP" : "en-US",
+            )}
           </p>
-          <p className="text-[10px] text-muted-foreground">Data Contributors</p>
+          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.contributors}</p>
         </div>
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
           <p className="text-lg font-medium text-primary">
-            {listings.reduce((s, l) => s + l.reward, 0).toLocaleString()}
+            {listings.reduce((s, l) => s + l.reward, 0).toLocaleString(
+              locale === "ja" ? "ja-JP" : "en-US",
+            )}
           </p>
-          <p className="text-[10px] text-muted-foreground">
-            Max $TRUST Available
-          </p>
+          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.maxReward}</p>
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2">
         {(["all", "sell", "donate", "license"] as const).map((f) => (
           <button
@@ -218,12 +262,11 @@ export function TrustExchange({
                 : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
             }`}
           >
-            {f === "all" ? "All" : typeLabel(f)}
+            {f === "all" ? messages.trustExchange.all : typeLabel(f)}
           </button>
         ))}
       </div>
 
-      {/* Listings */}
       <div className="flex flex-col gap-3">
         <AnimatePresence>
           {filtered.map((listing, i) => {
@@ -240,14 +283,12 @@ export function TrustExchange({
                 transition={{ delay: i * 0.05 }}
                 className="overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-sm"
               >
-                {/* Main content */}
                 <div className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
-                      {/* Title row */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
@@ -258,7 +299,7 @@ export function TrustExchange({
                               <span
                                 className={`rounded-full border px-1.5 py-0.5 text-[9px] font-medium ${urgencyBadge(listing.urgency)}`}
                               >
-                                Urgent
+                                {messages.trustExchange.urgent}
                               </span>
                             )}
                           </div>
@@ -270,15 +311,14 @@ export function TrustExchange({
                           variant="secondary"
                           className="flex-shrink-0 text-xs font-semibold text-foreground"
                         >
-                          {listing.reward.toLocaleString()} $TRUST
+                          {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
                         </Badge>
                       </div>
 
-                      {/* Meta row */}
                       <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {listing.buyers.toLocaleString()} contributors
+                          {listing.buyers.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} {messages.trustExchange.contributorsSuffix}
                         </span>
                         <span className="flex items-center gap-1">
                           <Star className="h-3 w-3 text-amber-400" />
@@ -292,11 +332,10 @@ export function TrustExchange({
                           className={`flex items-center gap-1 rounded-full px-1.5 py-0.5 ${accessColor(listing.accessLevel)}`}
                         >
                           <Eye className="h-3 w-3" />
-                          {listing.accessLevel} access
+                          {listing.accessLevel} {messages.trustExchange.access}
                         </span>
                       </div>
 
-                      {/* Tags */}
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {listing.tags.map((tag) => (
                           <span
@@ -312,15 +351,12 @@ export function TrustExchange({
                         {listing.description}
                       </p>
 
-                      {/* Expand for policy details */}
                       <button
-                        onClick={() =>
-                          setExpandedId(isExpanded ? null : listing.id)
-                        }
+                        onClick={() => setExpandedId(isExpanded ? null : listing.id)}
                         className="mt-2 flex items-center gap-1 text-[10px] font-medium text-primary transition-colors hover:text-primary/80"
                       >
                         <Lock className="h-3 w-3" />
-                        Data Access Policy
+                        {messages.trustExchange.accessPolicy}
                         {isExpanded ? (
                           <ChevronUp className="h-3 w-3" />
                         ) : (
@@ -343,7 +379,6 @@ export function TrustExchange({
                         )}
                       </AnimatePresence>
 
-                      {/* Action area */}
                       <div className="mt-3">
                         <AnimatePresence mode="wait">
                           {(!isSelected || txState === "idle") && (
@@ -354,8 +389,7 @@ export function TrustExchange({
                                 className="h-8 bg-primary text-xs text-primary-foreground hover:bg-primary/90"
                               >
                                 <TrendingUp className="mr-1.5 h-3.5 w-3.5" />
-                                {typeLabel(listing.type)} Data -{" "}
-                                {listing.reward.toLocaleString()} $TRUST
+                                {typeLabel(listing.type)} - {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
                               </Button>
                             </motion.div>
                           )}
@@ -370,19 +404,16 @@ export function TrustExchange({
                             >
                               <motion.div
                                 animate={{ scale: [1, 1.1, 1] }}
-                                transition={{
-                                  duration: 1,
-                                  repeat: Infinity,
-                                }}
+                                transition={{ duration: 1, repeat: Infinity }}
                               >
                                 <Fingerprint className="h-6 w-6 text-primary" />
                               </motion.div>
                               <div>
                                 <p className="text-xs font-medium text-foreground">
-                                  Biometric Authentication...
+                                  {messages.trustExchange.authTitle}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground">
-                                  Verifying identity with DID
+                                  {messages.trustExchange.authSub}
                                 </p>
                               </div>
                             </motion.div>
@@ -399,18 +430,14 @@ export function TrustExchange({
                               <motion.div
                                 className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent"
                                 animate={{ rotate: 360 }}
-                                transition={{
-                                  duration: 0.8,
-                                  repeat: Infinity,
-                                  ease: "linear",
-                                }}
+                                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
                               />
                               <div>
                                 <p className="text-xs font-medium text-foreground">
-                                  Generating ZK-Proof...
+                                  {messages.trustExchange.zkTitle}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground">
-                                  Midnight shielded transaction being created
+                                  {messages.trustExchange.zkSub}
                                 </p>
                               </div>
                             </motion.div>
@@ -426,21 +453,15 @@ export function TrustExchange({
                             >
                               <motion.div
                                 className="h-2 w-2 rounded-full bg-primary"
-                                animate={{
-                                  scale: [1, 1.5, 1],
-                                  opacity: [1, 0.5, 1],
-                                }}
-                                transition={{
-                                  duration: 0.6,
-                                  repeat: Infinity,
-                                }}
+                                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                                transition={{ duration: 0.6, repeat: Infinity }}
                               />
                               <div>
                                 <p className="text-xs font-medium text-foreground">
-                                  Signing on Midnight Ledger...
+                                  {messages.trustExchange.signingTitle}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground">
-                                  Smart contract executing data access policy
+                                  {messages.trustExchange.signingSub}
                                 </p>
                               </div>
                             </motion.div>
@@ -456,9 +477,7 @@ export function TrustExchange({
                             >
                               <CheckCircle2 className="h-4 w-4" />
                               <span>
-                                Transaction Complete -{" "}
-                                {listing.reward.toLocaleString()} $TRUST
-                                credited
+                                {messages.trustExchange.done}: {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
                               </span>
                             </motion.div>
                           )}

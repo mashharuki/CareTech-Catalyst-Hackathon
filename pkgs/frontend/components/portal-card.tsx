@@ -4,17 +4,15 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Building2, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 export function PortalCard({ type }: { type: "hospital" | "patient" }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { locale, messages } = useI18n();
 
   const isHospital = type === "hospital";
-  const title = isHospital ? "For Medical Institutions" : "For Patients";
-  const subtitle = isHospital ? "病院向けポータル" : "個人向けポータル";
-  const description = isHospital
-    ? "AI診断補助ワークフローで、医療の質と効率を向上"
-    : "あなたの医療データを安全に管理・活用";
-  const href = isHospital ? "/hospital" : "/patient";
+  const copy = isHospital ? messages.portal.hospital : messages.portal.patient;
+  const href = isHospital ? `/${locale}/hospital` : `/${locale}/patient`;
   const Icon = isHospital ? Building2 : User;
 
   return (
@@ -29,7 +27,6 @@ export function PortalCard({ type }: { type: "hospital" | "patient" }) {
         }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
-        {/* Background gradient on hover */}
         <motion.div
           className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{
@@ -54,22 +51,22 @@ export function PortalCard({ type }: { type: "hospital" | "patient" }) {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-medium tracking-tight text-foreground">
-              {title}
+              {copy.title}
             </h2>
             <p className="text-sm font-light text-muted-foreground">
-              {subtitle}
+              {copy.subtitle}
             </p>
           </div>
 
           <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            {description}
+            {copy.description}
           </p>
 
           <motion.div
             className={`flex items-center gap-2 text-sm font-medium ${isHospital ? "text-primary" : "text-trust-mint"}`}
             animate={{ opacity: isHovered ? 1 : 0.6 }}
           >
-            <span>Enter Portal</span>
+            <span>{copy.enter}</span>
             <motion.span animate={{ x: isHovered ? 4 : 0 }}>
               <ArrowRight className="h-4 w-4" />
             </motion.span>

@@ -132,6 +132,21 @@ export const increment = async (
   return finalizedTxData.public;
 };
 
+export const anchor = async (
+  counterContract: DeployedCounterContract,
+  hashField: bigint,
+): Promise<FinalizedTxData> => {
+  logger.info("Anchoring...");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const finalizedTxData = await (counterContract.callTx as any).anchor(
+    hashField,
+  );
+  logger.info(
+    `Transaction ${finalizedTxData.public.txId} added in block ${finalizedTxData.public.blockHeight}`,
+  );
+  return finalizedTxData.public;
+};
+
 export const displayCounterValue = async (
   providers: CounterProviders,
   counterContract: DeployedCounterContract,
@@ -144,6 +159,24 @@ export const displayCounterValue = async (
     logger.info(`Current counter value: ${Number(counterValue)}`);
   }
   return { contractAddress, counterValue };
+};
+
+export const getLastAnchorField = async (
+  providers: CounterProviders,
+  contractAddress: ContractAddress,
+): Promise<bigint | null> => {
+  assertIsContractAddress(contractAddress);
+  logger.info("Checking last anchor field...");
+  const value = await providers.publicDataProvider
+    .queryContractState(contractAddress)
+    .then((contractState) =>
+      contractState != null
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          (Counter.ledger(contractState.data) as any).lastAnchor
+        : null,
+    );
+  logger.info(`Last anchor: ${value}`);
+  return value as bigint | null;
 };
 
 export const createWalletAndMidnightProvider = async (

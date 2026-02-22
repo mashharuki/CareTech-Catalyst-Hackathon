@@ -19,7 +19,9 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@contract/*": ["../../contract/src/*"]
+      "@contract/*": ["../../contract/src/*"],
+      "contract": ["../../contract/dist/index.d.ts"],
+      "contract/*": ["../../contract/dist/*"]
     }
   }
 }
