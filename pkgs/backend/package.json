@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
-    "hono": "^4.12.1"
+    "hono": "^4.12.1",
+    "shared-infra": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",

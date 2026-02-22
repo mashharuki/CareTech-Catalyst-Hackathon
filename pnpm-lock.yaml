@@ -20,6 +20,9 @@ importers:
       hono:
         specifier: ^4.12.1
         version: 4.12.1
+      shared-infra:
+        specifier: workspace:*
+        version: link:../shared-infra
     devDependencies:
       '@types/node':
         specifier: ^20.11.17
@@ -75,6 +78,9 @@ importers:
       pino-pretty:
         specifier: ^13.1.2
         version: 13.1.3
+      shared-infra:
+        specifier: workspace:*
+        version: link:../shared-infra
       ws:
         specifier: ^8.18.3
         version: 8.19.0
@@ -210,6 +216,19 @@ importers:
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@24.10.13)(jiti@1.21.7)(tsx@4.21.0)(yaml@2.8.2)
+
+  pkgs/shared-infra:
+    dependencies:
+      pino:
+        specifier: ^10.1.0
+        version: 10.3.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.19.33
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 

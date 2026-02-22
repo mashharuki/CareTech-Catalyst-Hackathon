@@ -4,7 +4,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "echo 'TBD: shared-infra build'",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
     "lint": "echo 'TBD: shared-infra lint'"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./network": {
+      "import": "./dist/network.js",
+      "types": "./dist/network.d.ts",
+      "default": "./dist/network.js"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "types": "./dist/logger.d.ts",
+      "default": "./dist/logger.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "pino": "^10.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^20.11.17"
   }
 }
