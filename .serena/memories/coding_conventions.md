@@ -2,10 +2,13 @@
 - Monorepo management: `pnpm` workspace (`pkgs/*`).
 - Root formatting is Biome-driven (`pnpm run format`, configured in `biome.json`).
 - Package style/tooling:
-  - TypeScript + ESM across `cli`, `contract`, `frontend`.
+  - TypeScript + ESM across major packages.
   - Linting primarily via `eslint` in each package.
   - Testing via `vitest` (`cli`, `contract`).
-  - Frontend uses Vite + React 19.
+  - Frontend is now Next.js App Router + React 19 (not pure Vite runtime).
+  - Frontend styling uses Tailwind CSS v4 and shadcn/ui conventions (`@/components`, `@/lib` aliases).
+- Frontend implementation caution:
+  - `pkgs/frontend` contains both Next-era and Vite-era artifacts; when adding new UI/features, prioritize `app/`, `components/`, `lib/` and Next.js scripts.
 - Workflow and communication constraints from `AGENTS.md`:
   - Think in English, respond in Japanese.
   - Follow spec-driven development flow (requirements -> design -> tasks -> implementation).

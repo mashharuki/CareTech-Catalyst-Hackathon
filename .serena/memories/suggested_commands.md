@@ -4,9 +4,11 @@
 - `pnpm run format` : ルート全体を Biome で整形
 - `pnpm --filter contract test` : contract パッケージのテスト実行
 - `pnpm --filter contract build` : contract パッケージのビルド
-- `pnpm --filter cli lint` : cli パッケージのlint
+- `pnpm --filter cli lint` : cli パッケージの lint
 - `pnpm --filter cli build` : cli パッケージのビルド
-- `pnpm --filter frontend dev` : frontend の開発サーバ起動
-- `pnpm --filter frontend build` : frontend の本番ビルド
+- `pnpm --filter frontend dev` : frontend の開発サーバ起動（Next.js）
+- `pnpm --filter frontend build` : frontend の本番ビルド（Next.js）
+- `pnpm --filter frontend lint` : frontend の lint（ESLint）
+- `cat pkgs/frontend/package.json` : frontend の実行系スタック確認
 - `cat AGENTS.md` : プロジェクト固有運用ルールの再確認
 - `ls -la .kiro/specs .kiro/steering` : Kiro仕様ドキュメントの有無確認

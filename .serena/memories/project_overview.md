@@ -4,13 +4,16 @@
 - Main packages:
   - `pkgs/contract`: Compact contract source (`src/counter.compact`) and TS runtime/test harness.
   - `pkgs/cli`: Midnight interaction/deploy/test utilities (testnet/standalone/proof-server related scripts).
-  - `pkgs/frontend`: Vite + React 19 frontend.
+  - `pkgs/frontend`: Next.js App Router frontend (React 19).
+  - `pkgs/backend`: Backend package exists in workspace.
+- Frontend stack (latest):
+  - Runtime/build: Next.js `16.1.6` + React `19.2.4` (`next dev/build/start`).
+  - Styling/UI: Tailwind CSS v4, Radix UI, shadcn/ui (`components.json`), `lucide-react`, `framer-motion`.
+  - Forms/validation: `react-hook-form`, `zod`, `@hookform/resolvers`.
+  - Notes: Vite-era files (`vite.config.ts`, `src/main.tsx`, `index.html`) still remain, but active scripts are Next.js-based.
 - Tooling baseline:
   - Root formatter: Biome (`biome.json`, `pnpm run format`).
-  - Package-level lint/test/build are managed per package (`eslint`, `vitest`, `tsc`, `vite`).
-- Agent/skill assets:
-  - Both `.agents/skills` and `.codex/skills` exist and are mostly mirrored.
-  - Includes `midnight-compact-app-builder`, `frontend-design`, `vercel-react-best-practices`, `web-design-guidelines`, `skill-creator`, `docs-check`.
+  - Package-level lint/test/build are managed per package.
 - Process docs:
   - `AGENTS.md` defines Japanese response policy and Kiro spec-driven workflow expectations.
   - `.kiro/settings` exists, but `.kiro/steering` and `.kiro/specs` are currently empty (no active spec files yet).
