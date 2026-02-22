@@ -145,7 +145,7 @@ export function buildOpsRouter(): Hono {
       const hashField: bigint = BigInt(
         hashHex.startsWith("0x") ? hashHex : `0x${hashHex}`,
       );
-      if (process.env.NODE_ENV === "test") {
+      if (process.env.NODE_ENV === "test" || process.env.OPS_ANCHOR_FORCE_STUB === "1") {
         return c.json({
           ok: true,
           result: {

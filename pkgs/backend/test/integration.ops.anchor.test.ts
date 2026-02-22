@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { buildOpsRouter } from "../src/metrics.js";
 
 process.env.NODE_ENV = "test";
+process.env.OPS_ANCHOR_FORCE_STUB = "1";
 
 describe("POST /api/ops/anchor", () => {
   let app: Hono;
