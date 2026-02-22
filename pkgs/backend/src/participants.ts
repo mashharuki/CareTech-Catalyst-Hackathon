@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import { Hono } from "hono";
 import { authorizeScopes, type Role, type Scope } from "shared-infra/authz";
 import { createAppLogger } from "shared-infra/logger";
+import { recordAuditEvent } from "./audit.js";
 
 // 参加者の状態
 export type ParticipantStatus = "active" | "suspended";
@@ -180,6 +181,14 @@ export function buildParticipantsRouter(): Hono {
     participantsById.set(participant.id, participant);
     emailIndex.set(participant.email.toLowerCase(), participant.id);
     logger.info({ id: participant.id }, "Participant registered");
+    recordAuditEvent({
+      actorRole: (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
+      action: "participant.register",
+      targetType: "participant",
+      targetId: participant.id,
+      result: "ok",
+      detail: { trustLevel: participant.trustLevel },
+    });
     return c.json({ ok: true, participant }, 201);
   });
 
@@ -288,6 +297,14 @@ export function buildParticipantsRouter(): Hono {
     if (changed) {
       p.updatedAtMs = nowMs;
     }
+    recordAuditEvent({
+      actorRole: actor,
+      action: "participant.update",
+      targetType: "participant",
+      targetId: p.id,
+      result: "ok",
+      detail: { action: body.action, trustLevel: body.trustLevel, reason: body.reason },
+    });
     return c.json({ ok: true, participant: p });
   });
 
@@ -302,4 +319,8 @@ export function buildParticipantsRouter(): Hono {
   });
 
   return router;
+}
+
+export function getParticipantByIdSnapshot(id: string): Participant | undefined {
+  return participantsById.get(id);
 }

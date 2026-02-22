@@ -1,7 +1,8 @@
 import type { Context } from "hono";
 import { Hono } from "hono";
-import { authorizeScopes, type Scope, type Role } from "shared-infra/authz";
+import { authorizeScopes, type Role, type Scope } from "shared-infra/authz";
 import { createAppLogger } from "shared-infra/logger";
+import { recordAuditEvent } from "./audit.js";
 
 export interface ConsentVersion {
   version: number;
@@ -172,6 +173,14 @@ export function buildConsentsRouter(): Hono {
     };
     consentsById.set(cst.id, cst);
     logger.info({ id: cst.id }, "Consent registered");
+    recordAuditEvent({
+      actorRole: actor,
+      action: "consent.register",
+      targetType: "consent",
+      targetId: cst.id,
+      result: "ok",
+      detail: { version: 1 },
+    });
     return c.json({ ok: true, consent: cst }, 201);
   });
 
@@ -221,6 +230,14 @@ export function buildConsentsRouter(): Hono {
     cst.versions.push(v);
     cst.currentVersion = v.version;
     cst.updatedAtMs = nowMs;
+    recordAuditEvent({
+      actorRole: actor,
+      action: "consent.update",
+      targetType: "consent",
+      targetId: cst.id,
+      result: "ok",
+      detail: { version: v.version },
+    });
     return c.json({ ok: true, consent: cst });
   });
 
@@ -265,6 +282,14 @@ export function buildConsentsRouter(): Hono {
     cst.versions.push(v);
     cst.currentVersion = v.version;
     cst.updatedAtMs = nowMs;
+    recordAuditEvent({
+      actorRole: actor,
+      action: "consent.partial-revoke",
+      targetType: "consent",
+      targetId: cst.id,
+      result: "ok",
+      detail: { version: v.version },
+    });
     return c.json({ ok: true, consent: cst });
   });
 
@@ -273,21 +298,90 @@ export function buildConsentsRouter(): Hono {
     if (denied) return denied;
     const body: EvaluateConsentBody = await c.req.json();
     const cst = consentsById.get(body.consentId);
-    if (!cst)
+    if (!cst) {
+      recordAuditEvent({
+        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        action: "consent.evaluate",
+        targetType: "consent",
+        targetId: body.consentId,
+        result: "error",
+        detail: { reason: "CONSENT_NOT_FOUND" },
+      });
       return c.json({ allowed: false, reason: "CONSENT_NOT_FOUND" }, 404);
+    }
     const ver = cst.versions[cst.versions.length - 1];
     const now =
       typeof body.timestampMs === "number" ? body.timestampMs : Date.now();
-    if (now < ver.validFromMs || now > ver.validToMs)
+    if (now < ver.validFromMs || now > ver.validToMs) {
+      recordAuditEvent({
+        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        action: "consent.evaluate",
+        targetType: "consent",
+        targetId: body.consentId,
+        result: "error",
+        detail: { reason: "OUT_OF_VALIDITY" },
+      });
       return c.json({ allowed: false, reason: "OUT_OF_VALIDITY" });
-    if (!ver.dataTypes.includes(body.dataType))
+    }
+    if (!ver.dataTypes.includes(body.dataType)) {
+      recordAuditEvent({
+        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        action: "consent.evaluate",
+        targetType: "consent",
+        targetId: body.consentId,
+        result: "error",
+        detail: { reason: "DATA_TYPE_NOT_ALLOWED" },
+      });
       return c.json({ allowed: false, reason: "DATA_TYPE_NOT_ALLOWED" });
-    if (!ver.recipients.includes(body.recipient))
+    }
+    if (!ver.recipients.includes(body.recipient)) {
+      recordAuditEvent({
+        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        action: "consent.evaluate",
+        targetType: "consent",
+        targetId: body.consentId,
+        result: "error",
+        detail: { reason: "RECIPIENT_NOT_ALLOWED" },
+      });
       return c.json({ allowed: false, reason: "RECIPIENT_NOT_ALLOWED" });
-    if (!ver.purposes.includes(body.purpose))
+    }
+    if (!ver.purposes.includes(body.purpose)) {
+      recordAuditEvent({
+        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        action: "consent.evaluate",
+        targetType: "consent",
+        targetId: body.consentId,
+        result: "error",
+        detail: { reason: "PURPOSE_NOT_ALLOWED" },
+      });
       return c.json({ allowed: false, reason: "PURPOSE_NOT_ALLOWED" });
+    }
+    recordAuditEvent({
+      actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+      action: "consent.evaluate",
+      targetType: "consent",
+      targetId: body.consentId,
+      result: "ok",
+      detail: { version: ver.version },
+    });
     return c.json({ allowed: true, version: ver.version });
   });
 
   return router;
+}
+
+export function evaluateConsentLocal(input: EvaluateConsentBody): {
+  allowed: boolean
+  reason?: string
+  version?: number
+} {
+  const cst = consentsById.get(input.consentId);
+  if (!cst) return { allowed: false, reason: "CONSENT_NOT_FOUND" };
+  const ver = cst.versions[cst.versions.length - 1];
+  const now = typeof input.timestampMs === "number" ? input.timestampMs : Date.now();
+  if (now < ver.validFromMs || now > ver.validToMs) return { allowed: false, reason: "OUT_OF_VALIDITY" };
+  if (!ver.dataTypes.includes(input.dataType)) return { allowed: false, reason: "DATA_TYPE_NOT_ALLOWED" };
+  if (!ver.recipients.includes(input.recipient)) return { allowed: false, reason: "RECIPIENT_NOT_ALLOWED" };
+  if (!ver.purposes.includes(input.purpose)) return { allowed: false, reason: "PURPOSE_NOT_ALLOWED" };
+  return { allowed: true, version: ver.version };
 }
