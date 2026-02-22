@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "format": "biome format --write .",
-    "frontend": "pnpm --filter frontend"
+    "frontend": "pnpm --filter frontend",
+    "backend": "pnpm --filter backend",
+    "contract": "pnpm --filter contract",
+    "cli": "pnpm --filter cli"
   },
   "keywords": [],
   "author": "",

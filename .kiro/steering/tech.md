@@ -7,8 +7,16 @@
 
 ## パッケージ責務の技術境界
 - `contract`: Compact 契約とその TypeScript 連携面（エクスポート・テスト）を担う。
-- `cli`: ネットワーク接続、ウォレット、デプロイ/参加/操作など実運用手順を担う。
+- `backend`: 常駐HTTP API とドメインサービス実行境界を担う。フロントエンド連携向けの公開API、入力検証、認可、ユースケース調停を提供する。
+- `cli`: 運用コマンド境界を担う。デプロイ、ネットワーク検証、保守、運用補助などの手順実行に限定し、常駐API責務は持たない。
+- `shared-infra`: `backend` と `cli` の共通基盤（provider 構成、接続ユーティリティ、共通型）を担う。アプリ固有ユースケースは持たない。
 - `frontend`: ユーザー向け表示・操作層を担い、ドメイン操作は契約側の仕様に従う。
+
+## 境界運用ルール
+- `frontend` は `backend` の公開APIを唯一の同期連携先とする。
+- `backend` と `cli` が共通で利用する基盤ロジック（provider 設定、接続ユーティリティ等）は `shared-infra` へ分離し、相互直接依存を避ける。
+- `cli` は `backend` を呼び出してもよいが、`backend` が `cli` に依存してはならない。
+- 許可依存方向は `frontend -> backend -> shared-infra -> contract` および `cli -> shared-infra -> contract` とする。
 
 ## 品質ゲートの原則
 - フォーマットはリポジトリ全体で一貫させる（Biome）。
