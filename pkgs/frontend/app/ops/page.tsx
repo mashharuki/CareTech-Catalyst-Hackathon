@@ -1,12 +1,16 @@
 import JobsTable from "@/components/ops/JobsTable";
 
 async function fetchOps() {
+  const BASE =
+    process.env.BACKEND_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "http://localhost:3001";
   const [metricsRes, jobsRes] = await Promise.all([
-    fetch("http://localhost:3001/api/ops/metrics", {
+    fetch(`${BASE}/api/ops/metrics`, {
       headers: { "x-role": "operator" },
       cache: "no-store",
     }),
-    fetch("http://localhost:3001/api/outbox/jobs", {
+    fetch(`${BASE}/api/outbox/jobs`, {
       headers: { "x-role": "operator" },
       cache: "no-store",
     }),
@@ -109,4 +113,3 @@ export default async function OpsPage() {
     </div>
   );
 }
-

@@ -5,8 +5,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const BASE =
+    process.env.BACKEND_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    "http://localhost:3001";
   const res = await fetch(
-    `http://localhost:3001/api/outbox/jobs/${encodeURIComponent(id)}/retry`,
+    `${BASE}/api/outbox/jobs/${encodeURIComponent(id)}/retry`,
     {
       method: "POST",
       headers: {

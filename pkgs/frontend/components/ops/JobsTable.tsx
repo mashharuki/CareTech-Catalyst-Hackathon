@@ -20,6 +20,9 @@ type Job = {
 export default function JobsTable({ initial }: { initial: Job[] }) {
   const [jobs, setJobs] = useState<Job[]>(initial);
   const [pending, start] = useTransition();
+  const BASE =
+    (process.env.NEXT_PUBLIC_BACKEND_URL as string | undefined) ||
+    "http://localhost:3001";
 
   const retry = (id: string) => {
     start(async () => {
@@ -27,7 +30,7 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
         method: "POST",
       });
       if (r.ok) {
-        const latest = await fetch("http://localhost:3001/api/outbox/jobs", {
+        const latest = await fetch(`${BASE}/api/outbox/jobs`, {
           headers: { "x-role": "operator" },
           cache: "no-store",
         });
@@ -66,6 +69,7 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
                 <td className="px-3 py-2 text-right">
                   {j.status !== "succeeded" && j.status !== "compensated" ? (
                     <button
+                      type="button"
                       className="rounded bg-primary px-3 py-1 text-xs text-white hover:opacity-90 disabled:opacity-50"
                       disabled={pending}
                       onClick={() => retry(j.id)}
@@ -94,4 +98,3 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
     </div>
   );
 }
-
