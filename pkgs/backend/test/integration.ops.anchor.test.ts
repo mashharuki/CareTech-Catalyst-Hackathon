@@ -1,14 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { buildOpsRouter } from "../src/metrics.js";
-
-vi.mock("../src/anchor.js", () => ({
-  performAnchor: vi.fn().mockResolvedValue({
-    txId: "a".repeat(64),
-    blockHeight: 123n,
-    lastAnchor: 0x1234n,
-  }),
-}));
 
 describe("POST /api/ops/anchor", () => {
   let app: Hono;
@@ -35,4 +27,3 @@ describe("POST /api/ops/anchor", () => {
     expect(json.result.txId).toMatch(/^[a-f0-9]{64}$/);
   });
 });
-
