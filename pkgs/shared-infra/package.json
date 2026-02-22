@@ -1,0 +1,10 @@
+{
+  "name": "shared-infra",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'TBD: shared-infra build'",
+    "lint": "echo 'TBD: shared-infra lint'"
+  }
+}
