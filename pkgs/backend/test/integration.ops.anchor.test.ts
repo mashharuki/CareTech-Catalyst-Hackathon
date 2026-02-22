@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
 import { Hono } from "hono";
+import { beforeEach, describe, expect, it } from "vitest";
 import { buildOpsRouter } from "../src/metrics.js";
+
+process.env.NODE_ENV = "test";
 
 describe("POST /api/ops/anchor", () => {
   let app: Hono;
