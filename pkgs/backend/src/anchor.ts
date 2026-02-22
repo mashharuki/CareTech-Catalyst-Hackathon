@@ -1,8 +1,12 @@
-import { getProviderConfigFromEnv } from "shared-infra/network";
-import { Counter } from "contract";
-import { WalletBuilder, type Resource } from "@midnight-ntwrk/wallet";
+import { Transaction, type TransactionId } from "@midnight-ntwrk/ledger";
+import { findDeployedContract } from "@midnight-ntwrk/midnight-js-contracts";
 import { httpClientProofProvider } from "@midnight-ntwrk/midnight-js-http-client-proof-provider";
 import { indexerPublicDataProvider } from "@midnight-ntwrk/midnight-js-indexer-public-data-provider";
+import { levelPrivateStateProvider } from "@midnight-ntwrk/midnight-js-level-private-state-provider";
+import {
+  getLedgerNetworkId,
+  getZswapNetworkId,
+} from "@midnight-ntwrk/midnight-js-network-id";
 import { NodeZkConfigProvider } from "@midnight-ntwrk/midnight-js-node-zk-config-provider";
 import {
   type BalancedTransaction,
@@ -10,18 +14,11 @@ import {
   type UnbalancedTransaction,
   type WalletProvider,
 } from "@midnight-ntwrk/midnight-js-types";
-import {
-  deployContract,
-  findDeployedContract,
-} from "@midnight-ntwrk/midnight-js-contracts";
-import { levelPrivateStateProvider } from "@midnight-ntwrk/midnight-js-level-private-state-provider";
-import { Transaction, type TransactionId } from "@midnight-ntwrk/ledger";
-import {
-  getLedgerNetworkId,
-  getZswapNetworkId,
-} from "@midnight-ntwrk/midnight-js-network-id";
+import { type Resource, WalletBuilder } from "@midnight-ntwrk/wallet";
 import { Transaction as ZswapTransaction } from "@midnight-ntwrk/zswap";
+import { Counter } from "contract";
 import * as path from "node:path";
+import { getProviderConfigFromEnv } from "shared-infra/network";
 
 const PRIVATE_STATE_STORE = "counter-private-state";
 
@@ -32,10 +29,12 @@ const createWalletAndMidnightProvider = async (
   return {
     coinPublicKey: state.coinPublicKey,
     encryptionPublicKey: state.encryptionPublicKey,
-    async balanceTx(tx: UnbalancedTransaction): Promise<BalancedTransaction> {
-      const zswapTx = await wallet.proveTransaction(
-        ZswapTransaction.deserialize(
+    async balanceTx(
+      tx: UnbalancedTransaction,
+    ): Promise<BalancedTransaction> {
       const zswapTx = await (wallet as any).proveTransaction(
+        ZswapTransaction.deserialize(
+          tx.serialize(getLedgerNetworkId()),
           getZswapNetworkId(),
         ),
       );
@@ -49,12 +48,10 @@ const createWalletAndMidnightProvider = async (
       } as unknown as BalancedTransaction;
     },
     submitTx(tx: BalancedTransaction): Promise<TransactionId> {
-      return wallet.submitTransaction(tx);
-    },
       return (wallet as any).submitTransaction(tx);
+    },
+  };
 };
-
-export type AnchorResult = {
 
 export type AnchorResult = {
   txId: string;
