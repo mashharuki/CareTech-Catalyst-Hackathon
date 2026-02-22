@@ -1,0 +1,247 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# CodeRabbit Configuration for NextMed Project
+# Project: Privacy-Preserving Medical Data Platform on Midnight Blockchain
+# Repository: Public (Open Source)
+
+# ============================================================================
+# GLOBAL SETTINGS
+# ============================================================================
+
+# Primary language: Japanese with English support
+language: "ja-JP"
+
+early_access: false
+enable_free_tier: true
+
+# ============================================================================
+# REVIEWS
+# ============================================================================
+
+reviews:
+  # Use assertive profile for detailed security and privacy feedback
+  profile: "assertive"
+
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  review_status: true
+  commit_status: true
+
+  # Enable detailed walkthrough features
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true  # Useful for understanding contract interactions
+  estimate_code_review_effort: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+
+  # Label suggestions for tracking development progress
+  suggested_labels: true
+  labeling_instructions:
+    - "security: Focus on privacy-preserving features and ZK proofs"
+    - "contract: Compact smart contract changes"
+    - "cli: CLI tool and deployment script changes"
+    - "frontend: Next.js UI changes"
+    - "docs: Documentation updates"
+    - "test: Test coverage improvements"
+    - "breaking: Breaking changes that affect API or contract interface"
+  auto_apply_labels: true
+
+  suggested_reviewers: true
+  poem: false  # Professional context
+
+  # Path filters: Focus on core implementation
+  path_filters:
+    - "pkgs/contract/**"      # Compact smart contracts
+    - "pkgs/cli/**"           # CLI tools and scripts
+    - "pkgs/frontend/**"      # Next.js frontend
+    - "README.md"             # Project documentation
+    - "AGENTS.md"             # AI development guidelines
+    - ".kiro/**"              # Kiro specs and steering
+    - "!node_modules/**"
+    - "!.git/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/.next/**"
+    - "!**/managed/**"        # Compiled Compact output
+    - "!**/keys/**"           # ZK proving keys
+    - "!**/zkir/**"           # ZK intermediate representation
+
+  # Path-specific instructions
+  path_instructions:
+    - path: "pkgs/contract/**/*.compact"
+      instructions: |
+        **Compact Smart Contract Review (Midnight Blockchain)**
+        - Verify privacy guarantees: Check proper use of `witness` functions and `disclose()` wrappers
+        - Validate ledger state management: Ensure correct use of Counter, Set, Map, MerkleTree types
+        - Review access control: Verify authorization patterns using hash-based authentication
+        - Check data validation: Ensure all inputs are properly validated before storage
+        - Verify commitment schemes: Review use of `persistentHash` and `persistentCommit`
+        - Assess gas efficiency: Check for unnecessary operations in circuits
+        - Review error handling: Ensure proper `assert` statements with clear messages
+        - Validate constructor initialization: Check sealed ledger fields are properly set
+        - Security: Look for potential disclosure of private data without explicit `disclose()`
+        - Compliance: Verify adherence to Japanese medical data regulations (APPI, PIPA)
+
+    - path: "pkgs/contract/**/*.ts"
+      instructions: |
+        **Contract TypeScript Support Code Review**
+        - Verify witness function implementations match Compact declarations
+        - Check proper handling of Compact types in TypeScript (bigint, Uint8Array, etc.)
+        - Review error handling for witness functions
+        - Validate test coverage for contract interactions
+        - Ensure proper use of @midnight-ntwrk packages
+
+    - path: "pkgs/cli/**"
+      instructions: |
+        **CLI Tool Review**
+        - Verify proper Midnight SDK usage (@midnight-ntwrk/*)
+        - Check wallet integration and transaction signing flows
+        - Review proof server configuration and connectivity
+        - Validate environment variable handling (no hardcoded secrets)
+        - Ensure proper error handling and user feedback
+        - Check deployment script safety (testnet vs mainnet guards)
+        - Review logging practices (no sensitive data in logs)
+        - Validate Docker configuration for standalone environment
+
+    - path: "pkgs/frontend/**"
+      instructions: |
+        **Frontend Review (Next.js + shadcn/ui)**
+        - Verify Lace Wallet integration and DApp connector usage
+        - Check responsive design and mobile-first implementation
+        - Review error handling and loading states
+        - Validate TypeScript type safety and proper state management
+        - Ensure accessibility compliance (WCAG 2.1 AA)
+        - Check proper use of Next.js 16 App Router patterns
+        - Review React 19 best practices and hooks usage
+        - Validate form handling with react-hook-form + zod
+        - Ensure no sensitive medical data exposure in client-side code
+        - Check proper use of shadcn/ui components (New York style)
+
+    - path: "**/*.test.ts"
+      instructions: |
+        **Test Review**
+        - Verify test coverage for critical paths
+        - Check edge cases and error scenarios
+        - Validate test isolation and independence
+        - Ensure proper use of Vitest features
+        - Review mock implementations for accuracy
+        - Check for flaky tests (timing issues, random data)
+
+    - path: "README.md"
+      instructions: |
+        **Documentation Review**
+        - Verify setup instructions are complete and accurate
+        - Check that all dependencies are documented
+        - Ensure security best practices are mentioned
+        - Validate links and references
+        - Review for clarity and completeness
+
+    - path: ".kiro/specs/**"
+      instructions: |
+        **Specification Review**
+        - Verify requirements follow EARS patterns
+        - Check design decisions are well-documented
+        - Validate task breakdown is actionable
+        - Ensure alignment with product.md vision
+
+  abort_on_close: true
+  disable_cache: false
+
+  # Auto review configuration
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    ignore_title_keywords:
+      - "wip"
+      - "draft"
+      - "作業中"
+      - "work in progress"
+    drafts: false
+
+  # Finishing touches
+  finishing_touches:
+    docstrings:
+      enabled: true
+      style: "JSDoc"  # For TypeScript files
+    unit_tests:
+      enabled: true
+      framework: "vitest"
+
+  # Tools configuration
+  tools:
+    # Markdown linting for documentation
+    markdownlint:
+      enabled: true
+
+    # Japanese grammar and style checking
+    languagetool:
+      enabled: true
+      level: "default"  # Balanced for technical documentation
+      enabled_categories:
+        - "GRAMMAR"
+        - "STYLE"
+      disabled_categories:
+        - "TYPOS"  # May have false positives with technical terms
+      disabled_rules:
+        - "WHITESPACE_RULE"
+        - "EN_QUOTES"
+
+    # TypeScript/JavaScript linting
+    biome:
+      enabled: true
+
+    # Security scanning (important for public repo)
+    gitleaks:
+      enabled: true
+
+    # Additional security scanning
+    semgrep:
+      enabled: true
+
+    # Shell script checking
+    shellcheck:
+      enabled: true
+
+    # Disable Python-specific tools
+    ruff:
+      enabled: false
+
+    # AST-based pattern matching
+    ast-grep:
+      essential_rules: true
+
+# ============================================================================
+# CHAT
+# ============================================================================
+
+chat:
+  art: false  # Professional context
+  auto_reply: true
+
+# ============================================================================
+# KNOWLEDGE BASE
+# ============================================================================
+
+knowledge_base:
+  opt_out: false
+
+  web_search:
+    enabled: true  # Enable for Midnight docs and medical data regulations
+
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"           # AI development guidelines
+      - "README.md"           # Project overview
+      - ".kiro/steering/**"   # Development steering rules
+
+  learnings:
+    scope: "local"  # Keep learnings repository-specific
+
+  issues:
+    scope: "local"
+
+  pull_requests:
+    scope: "local"
