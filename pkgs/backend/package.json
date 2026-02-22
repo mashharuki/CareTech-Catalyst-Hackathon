@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "backend",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
