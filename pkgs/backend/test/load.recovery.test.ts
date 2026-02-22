@@ -10,7 +10,8 @@ describe("load & recovery (hold → re-evaluation)", () => {
       headers: {
         "content-type": "application/json",
         "x-role": "operator",
-        "x-scopes": "participant:register participant:update request:read audit:read",
+        "x-scopes":
+          "participant:register participant:update request:read audit:read",
       },
       body: JSON.stringify({
         id: "load-1",
@@ -80,7 +81,9 @@ describe("load & recovery (hold → re-evaluation)", () => {
       headers: { "x-role": "operator" },
     });
     const job1 = await job1Res.json();
-    expect(job1.job.status === "on_hold" || job1.job.status === "retrying").toBe(true);
+    expect(
+      job1.job.status === "on_hold" || job1.job.status === "retrying",
+    ).toBe(true);
     // resume requester and requeue -> should proceed to succeeded eventually
     await app.request("/api/participants/load-1/state", {
       method: "POST",
@@ -98,4 +101,3 @@ describe("load & recovery (hold → re-evaluation)", () => {
     expect([200, 409]).toContain(reRes.status);
   });
 });
-

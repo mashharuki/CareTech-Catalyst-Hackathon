@@ -1,9 +1,10 @@
 import type { Context, MiddlewareHandler } from "hono";
 import { Hono } from "hono";
 import { authorizeScopes, type Scope } from "shared-infra/authz";
-import { getOutboxStats } from "./outbox.js";
-import { getAuditStats, getRecentAuditEvents } from "./audit.js";
 import { getProviderConfigFromEnv } from "shared-infra/network";
+import { performAnchor } from "./anchor.js";
+import { getAuditStats, getRecentAuditEvents } from "./audit.js";
+import { getOutboxStats } from "./outbox.js";
 
 type Stat = {
   path: string;
@@ -48,7 +49,15 @@ export function metricsMiddleware(): MiddlewareHandler {
     const dur = end - start;
     let s = stats.get(path);
     if (!s) {
-      s = { path, count: 0, success: 0, error: 0, totalMs: 0, minMs: Infinity, maxMs: 0 };
+      s = {
+        path,
+        count: 0,
+        success: 0,
+        error: 0,
+        totalMs: 0,
+        minMs: Infinity,
+        maxMs: 0,
+      };
       stats.set(path, s);
     }
     s.count += 1;
@@ -73,7 +82,8 @@ export function buildOpsRouter(): Hono {
       avgMs: s.count > 0 ? Math.round(s.totalMs / s.count) : 0,
       minMs: s.minMs === Infinity ? 0 : s.minMs,
       maxMs: s.maxMs,
-      successRate: s.count > 0 ? Number(((s.success / s.count) * 100).toFixed(2)) : 0,
+      successRate:
+        s.count > 0 ? Number(((s.success / s.count) * 100).toFixed(2)) : 0,
     }));
     const outbox = getOutboxStats();
     const audit = getAuditStats();
@@ -109,10 +119,36 @@ export function buildOpsRouter(): Hono {
       contractOk = false;
     }
     return c.json({
-      provider: { indexer: cfg.indexer, node: cfg.node, proofServer: cfg.proofServer },
-      indexer: { ok: indexerOk, status: indexerStatus, latencyMs: indexerLatencyMs },
+      provider: {
+        indexer: cfg.indexer,
+        node: cfg.node,
+        proofServer: cfg.proofServer,
+      },
+      indexer: {
+        ok: indexerOk,
+        status: indexerStatus,
+        latencyMs: indexerLatencyMs,
+      },
       contract: { ok: contractOk },
     });
+  });
+  router.post("/anchor", async (c) => {
+    const denied = authzOrResponse(c, ["ops:invoke"]);
+    if (denied) return denied;
+    const body = await c.req.json().catch(() => ({}));
+    const contractAddress = String(body?.contractAddress ?? "").trim();
+    const hashHex = String(body?.hashHex ?? "").trim();
+    if (!contractAddress || !hashHex) {
+      return c.json({ error: "INVALID_INPUT" }, 400);
+    }
+    try {
+      const hashField: bigint = BigInt(hashHex.startsWith("0x") ? hashHex : `0x${hashHex}`);
+      const result = await performAnchor(console, contractAddress, hashField);
+      return c.json({ ok: true, result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return c.json({ ok: false, error: message }, 500);
+    }
   });
   return router;
 }

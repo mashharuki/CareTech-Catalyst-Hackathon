@@ -10,10 +10,9 @@ import { Button } from "@/components/ui/button";
 import type { Patient } from "./patient-list";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
-function buildAutoFillData(isJa: boolean): Record<
-  string,
-  { diagnosis: string; findings: string; plan: string }
-> {
+function buildAutoFillData(
+  isJa: boolean,
+): Record<string, { diagnosis: string; findings: string; plan: string }> {
   if (isJa) {
     return {
       p1: {
@@ -47,29 +46,25 @@ function buildAutoFillData(isJa: boolean): Record<
       diagnosis: "Right upper lobe lung nodule (Lung-RADS 4B)",
       findings:
         "AI analysis on chest X-ray detected a ~12mm solid nodule in right upper lobe S1 with irregular margin. AI confidence 89%.",
-      plan:
-        "Schedule contrast chest CT. Request respiratory surgery consult. Follow-up in 2 weeks.",
+      plan: "Schedule contrast chest CT. Request respiratory surgery consult. Follow-up in 2 weeks.",
     },
     p2: {
       diagnosis: "Diabetic nephropathy (CKD Stage 3b)",
       findings:
         "Bilateral renal cortical thinning on renal ultrasound. eGFR 38 mL/min, proteinuria (2+).",
-      plan:
-        "Consider SGLT2 inhibitor initiation. Refer to nephrology. Dietary counseling (protein 0.8 g/kg/day).",
+      plan: "Consider SGLT2 inhibitor initiation. Refer to nephrology. Dietary counseling (protein 0.8 g/kg/day).",
     },
     p5: {
       diagnosis: "Persistent atrial fibrillation (CHA2DS2-VASc 4)",
       findings:
         "Holter ECG confirms persistent AF with average HR 92 bpm. Left atrial enlargement on echo.",
-      plan:
-        "Start DOAC, rate control, and evaluate catheter ablation eligibility.",
+      plan: "Start DOAC, rate control, and evaluate catheter ablation eligibility.",
     },
     default: {
       diagnosis: "Checkup result: no significant findings",
       findings:
         "No clear abnormalities detected in AI imaging analysis or bloodwork.",
-      plan:
-        "Continue annual checkups with lifestyle counseling and follow-up in 1 year.",
+      plan: "Continue annual checkups with lifestyle counseling and follow-up in 1 year.",
     },
   };
 }
@@ -90,7 +85,10 @@ export function MedicalRecordForm({
   const [findings, setFindings] = useState("");
   const [plan, setPlan] = useState("");
 
-  const autoFillData = useMemo(() => buildAutoFillData(locale === "ja"), [locale]);
+  const autoFillData = useMemo(
+    () => buildAutoFillData(locale === "ja"),
+    [locale],
+  );
 
   useEffect(() => {
     if (adopted && patient) {
@@ -131,7 +129,9 @@ export function MedicalRecordForm({
             className="mx-auto mb-3 h-8 w-8 text-muted-foreground/40"
             strokeWidth={1.5}
           />
-          <p className="text-sm text-muted-foreground">{messages.medicalRecord.empty}</p>
+          <p className="text-sm text-muted-foreground">
+            {messages.medicalRecord.empty}
+          </p>
         </div>
       </div>
     );
@@ -141,7 +141,9 @@ export function MedicalRecordForm({
     <div className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4">
       <div className="flex items-center gap-2">
         <FileText className="h-4 w-4 text-primary" />
-        <h3 className="text-xs font-medium text-foreground">{messages.medicalRecord.title}</h3>
+        <h3 className="text-xs font-medium text-foreground">
+          {messages.medicalRecord.title}
+        </h3>
         {filling && (
           <motion.div
             className="ml-auto flex items-center gap-1 text-[10px] text-primary"
@@ -156,7 +158,10 @@ export function MedicalRecordForm({
 
       <div className="flex flex-col gap-2.5">
         <div>
-          <Label htmlFor="patient-name" className="text-[10px] text-muted-foreground">
+          <Label
+            htmlFor="patient-name"
+            className="text-[10px] text-muted-foreground"
+          >
             {messages.medicalRecord.patientName}
           </Label>
           <Input
@@ -168,7 +173,10 @@ export function MedicalRecordForm({
         </div>
 
         <div>
-          <Label htmlFor="diagnosis" className="text-[10px] text-muted-foreground">
+          <Label
+            htmlFor="diagnosis"
+            className="text-[10px] text-muted-foreground"
+          >
             {messages.medicalRecord.diagnosis}
           </Label>
           <Input
@@ -185,7 +193,10 @@ export function MedicalRecordForm({
         </div>
 
         <div>
-          <Label htmlFor="findings" className="text-[10px] text-muted-foreground">
+          <Label
+            htmlFor="findings"
+            className="text-[10px] text-muted-foreground"
+          >
             {messages.medicalRecord.findings}
           </Label>
           <Textarea
@@ -213,7 +224,9 @@ export function MedicalRecordForm({
             placeholder={messages.medicalRecord.planPlaceholder}
             rows={2}
             className={`mt-1 text-xs transition-colors ${
-              plan ? "border-primary/20 bg-primary/5 text-foreground" : "bg-card text-foreground"
+              plan
+                ? "border-primary/20 bg-primary/5 text-foreground"
+                : "bg-card text-foreground"
             }`}
           />
         </div>
@@ -221,7 +234,10 @@ export function MedicalRecordForm({
 
       <AnimatePresence>
         {filled && !submitted && (
-          <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <Button
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               size="sm"

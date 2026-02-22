@@ -214,7 +214,8 @@ const en: typeof ja = {
     subtitle: "Data Ownership Portal",
     uploadStart: "File received - initiating AI anonymization pipeline",
     txContext: "Creating shielded transaction context...",
-    anonymized: "Anonymization complete - PII fields redacted with ZKP commitment",
+    anonymized:
+      "Anonymization complete - PII fields redacted with ZKP commitment",
     hashCommitted: "Data hash committed:",
     ledgerStored: "Shielded state stored on Midnight ledger",
     nftMinted: "Data NFT minted - asset ready for marketplace listing",

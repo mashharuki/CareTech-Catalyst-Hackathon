@@ -17,4 +17,3 @@ export function buildTestApp(): Hono {
   app.route("/api/ops", buildOpsRouter());
   return app;
 }
-

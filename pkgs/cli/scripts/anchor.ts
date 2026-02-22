@@ -14,7 +14,11 @@ import { assertAuthorized, loadAuthzContextFromEnv } from "shared-infra/authz";
 
 dotenv.config();
 
-type SupportedNetwork = "standalone" | "testnet-local" | "testnet" | "testnet-remote";
+type SupportedNetwork =
+  | "standalone"
+  | "testnet-local"
+  | "testnet"
+  | "testnet-remote";
 
 const {
   NETWORK_ENV_VAR,
@@ -70,7 +74,9 @@ const ensureContractAddress = (address: string | undefined): string => {
 
 const ensureAnchorHash = (hex: string | undefined): bigint => {
   if (hex === undefined || hex.trim() === "") {
-    throw new Error("Anchor hash is required. Set ANCHOR_HASH_HEX to 0x-prefixed hex.");
+    throw new Error(
+      "Anchor hash is required. Set ANCHOR_HASH_HEX to 0x-prefixed hex.",
+    );
   }
   const trimmed = hex.trim();
   const normalized = trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
@@ -154,4 +160,3 @@ await main().catch((error) => {
   }
   process.exitCode = 1;
 });
-

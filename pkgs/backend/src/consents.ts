@@ -300,7 +300,8 @@ export function buildConsentsRouter(): Hono {
     const cst = consentsById.get(body.consentId);
     if (!cst) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "consent.evaluate",
         targetType: "consent",
         targetId: body.consentId,
@@ -314,7 +315,8 @@ export function buildConsentsRouter(): Hono {
       typeof body.timestampMs === "number" ? body.timestampMs : Date.now();
     if (now < ver.validFromMs || now > ver.validToMs) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "consent.evaluate",
         targetType: "consent",
         targetId: body.consentId,
@@ -325,7 +327,8 @@ export function buildConsentsRouter(): Hono {
     }
     if (!ver.dataTypes.includes(body.dataType)) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "consent.evaluate",
         targetType: "consent",
         targetId: body.consentId,
@@ -336,7 +339,8 @@ export function buildConsentsRouter(): Hono {
     }
     if (!ver.recipients.includes(body.recipient)) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "consent.evaluate",
         targetType: "consent",
         targetId: body.consentId,
@@ -347,7 +351,8 @@ export function buildConsentsRouter(): Hono {
     }
     if (!ver.purposes.includes(body.purpose)) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "consent.evaluate",
         targetType: "consent",
         targetId: body.consentId,
@@ -357,7 +362,7 @@ export function buildConsentsRouter(): Hono {
       return c.json({ allowed: false, reason: "PURPOSE_NOT_ALLOWED" });
     }
     recordAuditEvent({
-      actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+      actorRole: (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
       action: "consent.evaluate",
       targetType: "consent",
       targetId: body.consentId,
@@ -371,17 +376,22 @@ export function buildConsentsRouter(): Hono {
 }
 
 export function evaluateConsentLocal(input: EvaluateConsentBody): {
-  allowed: boolean
-  reason?: string
-  version?: number
+  allowed: boolean;
+  reason?: string;
+  version?: number;
 } {
   const cst = consentsById.get(input.consentId);
   if (!cst) return { allowed: false, reason: "CONSENT_NOT_FOUND" };
   const ver = cst.versions[cst.versions.length - 1];
-  const now = typeof input.timestampMs === "number" ? input.timestampMs : Date.now();
-  if (now < ver.validFromMs || now > ver.validToMs) return { allowed: false, reason: "OUT_OF_VALIDITY" };
-  if (!ver.dataTypes.includes(input.dataType)) return { allowed: false, reason: "DATA_TYPE_NOT_ALLOWED" };
-  if (!ver.recipients.includes(input.recipient)) return { allowed: false, reason: "RECIPIENT_NOT_ALLOWED" };
-  if (!ver.purposes.includes(input.purpose)) return { allowed: false, reason: "PURPOSE_NOT_ALLOWED" };
+  const now =
+    typeof input.timestampMs === "number" ? input.timestampMs : Date.now();
+  if (now < ver.validFromMs || now > ver.validToMs)
+    return { allowed: false, reason: "OUT_OF_VALIDITY" };
+  if (!ver.dataTypes.includes(input.dataType))
+    return { allowed: false, reason: "DATA_TYPE_NOT_ALLOWED" };
+  if (!ver.recipients.includes(input.recipient))
+    return { allowed: false, reason: "RECIPIENT_NOT_ALLOWED" };
+  if (!ver.purposes.includes(input.purpose))
+    return { allowed: false, reason: "PURPOSE_NOT_ALLOWED" };
   return { allowed: true, version: ver.version };
 }

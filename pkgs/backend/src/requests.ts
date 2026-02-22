@@ -5,7 +5,10 @@ import { createAppLogger } from "shared-infra/logger";
 import { recordAuditEvent } from "./audit.js";
 import { type EvaluateConsentBody, evaluateConsentLocal } from "./consents.js";
 import { enqueueOutboxForRequest } from "./outbox.js";
-import { getParticipantByIdSnapshot, type Participant } from "./participants.js";
+import {
+  getParticipantByIdSnapshot,
+  type Participant,
+} from "./participants.js";
 
 type RequestStatus = "received" | "approved" | "rejected";
 
@@ -87,11 +90,31 @@ function evaluateUnified(
   p: Participant | undefined,
   consentEval: { allowed: boolean; reason?: string; version?: number },
 ): { status: RequestStatus; reason?: string; participantOk: boolean } {
-  if (!p) return { status: "rejected", reason: "REQUESTER_NOT_FOUND", participantOk: false };
-  if (p.status !== "active") return { status: "rejected", reason: "PARTICIPANT_INACTIVE", participantOk: false };
+  if (!p)
+    return {
+      status: "rejected",
+      reason: "REQUESTER_NOT_FOUND",
+      participantOk: false,
+    };
+  if (p.status !== "active")
+    return {
+      status: "rejected",
+      reason: "PARTICIPANT_INACTIVE",
+      participantOk: false,
+    };
   const trustOk = p.trustLevel === "high" || p.trustLevel === "medium";
-  if (!trustOk) return { status: "rejected", reason: "TRUST_LEVEL_LOW", participantOk: false };
-  if (!consentEval.allowed) return { status: "rejected", reason: consentEval.reason || "CONSENT_DENIED", participantOk: true };
+  if (!trustOk)
+    return {
+      status: "rejected",
+      reason: "TRUST_LEVEL_LOW",
+      participantOk: false,
+    };
+  if (!consentEval.allowed)
+    return {
+      status: "rejected",
+      reason: consentEval.reason || "CONSENT_DENIED",
+      participantOk: true,
+    };
   return { status: "approved", participantOk: true };
 }
 
@@ -104,7 +127,8 @@ export function buildRequestsRouter(): Hono {
     if (denied) return denied;
     const body: SubmitBody = await c.req.json();
     const issues = validateSubmit(body);
-    if (issues.length > 0) return c.json({ error: "VALIDATION_FAILED", issues }, 400);
+    if (issues.length > 0)
+      return c.json({ error: "VALIDATION_FAILED", issues }, 400);
 
     const nowMs: number = Date.now();
     const trackingId = genTrackingId();
@@ -138,9 +162,12 @@ export function buildRequestsRouter(): Hono {
       updatedAtMs: nowMs,
     };
     requestsById.set(trackingId, req);
-    logger.info({ trackingId, status: req.status }, "Integration request evaluated");
+    logger.info(
+      { trackingId, status: req.status },
+      "Integration request evaluated",
+    );
     recordAuditEvent({
-      actorRole: ((c.req.header("x-role")?.toLowerCase() as any) ?? "external"),
+      actorRole: (c.req.header("x-role")?.toLowerCase() as any) ?? "external",
       action: "request.submit",
       targetType: "request",
       targetId: trackingId,
@@ -148,18 +175,30 @@ export function buildRequestsRouter(): Hono {
       detail: { reason: req.reason },
     });
     if (req.status === "approved") {
-      const simAnchor = c.req.header("x-simulate-anchor") as "ok" | "fail" | undefined;
-      const simAudit = c.req.header("x-simulate-audit") as "ok" | "fail" | undefined;
-      enqueueOutboxForRequest({
-        trackingId,
-        requesterId: body.requesterId,
-        consentId: body.consentId,
-        dataType: body.dataType,
-        recipient: body.recipient,
-        purpose: body.purpose,
-      }, { simulateAnchor: simAnchor, simulateAudit: simAudit });
+      const simAnchor = c.req.header("x-simulate-anchor") as
+        | "ok"
+        | "fail"
+        | undefined;
+      const simAudit = c.req.header("x-simulate-audit") as
+        | "ok"
+        | "fail"
+        | undefined;
+      enqueueOutboxForRequest(
+        {
+          trackingId,
+          requesterId: body.requesterId,
+          consentId: body.consentId,
+          dataType: body.dataType,
+          recipient: body.recipient,
+          purpose: body.purpose,
+        },
+        { simulateAnchor: simAnchor, simulateAudit: simAudit },
+      );
     }
-    return c.json({ ok: true, trackingId, status: req.status, reason: req.reason }, 201);
+    return c.json(
+      { ok: true, trackingId, status: req.status, reason: req.reason },
+      201,
+    );
   });
 
   router.get("/:trackingId", (c) => {
@@ -187,14 +226,17 @@ export function buildRequestsRouter(): Hono {
     };
     r.updatedAtMs = nowMs;
     recordAuditEvent({
-      actorRole: ((c.req.header("x-role")?.toLowerCase() as any) ?? "external"),
+      actorRole: (c.req.header("x-role")?.toLowerCase() as any) ?? "external",
       action: "request.notify",
       targetType: "request",
       targetId: id,
       result: success ? "ok" : "error",
       detail: { delivered: success },
     });
-    return c.json({ delivered: r.notifyResult.delivered, error: r.notifyResult.error }, success ? 202 : 503);
+    return c.json(
+      { delivered: r.notifyResult.delivered, error: r.notifyResult.error },
+      success ? 202 : 503,
+    );
   });
 
   return router;

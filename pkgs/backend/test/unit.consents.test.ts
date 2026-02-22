@@ -46,4 +46,3 @@ describe("consents evaluate", () => {
     expect(data.allowed).toBe(true);
   });
 });
-

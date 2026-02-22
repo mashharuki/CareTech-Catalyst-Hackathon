@@ -72,7 +72,6 @@ function authzOrResponse(c: Context, required: Scope[]) {
     );
   }
   return null;
-
 }
 
 function computeHash(payload: string): string {
@@ -90,7 +89,8 @@ export function recordAuditEvent(input: {
 }): AuditEvent {
   const seq = events.length + 1;
   const ts = input.timestampMs ?? Date.now();
-  const prevHash = events.length === 0 ? "GENESIS" : events[events.length - 1].hash;
+  const prevHash =
+    events.length === 0 ? "GENESIS" : events[events.length - 1].hash;
   const base = {
     seq,
     timestampMs: ts,
@@ -111,8 +111,10 @@ export function recordAuditEvent(input: {
 
 function search(filter: AuditFilter): AuditEvent[] {
   return events.filter((e) => {
-    if (typeof filter.fromMs === "number" && e.timestampMs < filter.fromMs) return false;
-    if (typeof filter.toMs === "number" && e.timestampMs > filter.toMs) return false;
+    if (typeof filter.fromMs === "number" && e.timestampMs < filter.fromMs)
+      return false;
+    if (typeof filter.toMs === "number" && e.timestampMs > filter.toMs)
+      return false;
     if (filter.actorRole && e.actorRole !== filter.actorRole) return false;
     if (filter.targetType && e.targetType !== filter.targetType) return false;
     if (filter.targetId && e.targetId !== filter.targetId) return false;
@@ -122,7 +124,10 @@ function search(filter: AuditFilter): AuditEvent[] {
   });
 }
 
-function verifyChain(): { ok: boolean; issues: Array<{ seq: number; reason: string }> } {
+function verifyChain(): {
+  ok: boolean;
+  issues: Array<{ seq: number; reason: string }>;
+} {
   const issues: Array<{ seq: number; reason: string }> = [];
   let expectedPrevHash = "GENESIS";
   let expectedSeq = 1;
@@ -154,14 +159,24 @@ export function buildAuditRouter(): Hono {
   router.get("/events", (c) => {
     const denied = authzOrResponse(c, ["audit:read"]);
     if (denied) return denied;
-    const fromMs = c.req.query("fromMs") ? Number(c.req.query("fromMs")) : undefined;
+    const fromMs = c.req.query("fromMs")
+      ? Number(c.req.query("fromMs"))
+      : undefined;
     const toMs = c.req.query("toMs") ? Number(c.req.query("toMs")) : undefined;
     const actorRole = c.req.query("actorRole") as Role | undefined;
     const targetType = c.req.query("targetType") as AuditTargetType | undefined;
     const targetId = c.req.query("targetId") || undefined;
     const action = c.req.query("action") || undefined;
     const result = c.req.query("result") as AuditResult | undefined;
-    const items = search({ fromMs, toMs, actorRole, targetType, targetId, action, result });
+    const items = search({
+      fromMs,
+      toMs,
+      actorRole,
+      targetType,
+      targetId,
+      action,
+      result,
+    });
     return c.json({ items, total: items.length });
   });
 
@@ -171,7 +186,8 @@ export function buildAuditRouter(): Hono {
     const res = verifyChain();
     if (!res.ok) {
       recordAuditEvent({
-        actorRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+        actorRole:
+          (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
         action: "audit.integrity-alert",
         targetType: "audit",
         targetId: "chain",
@@ -188,16 +204,21 @@ export function buildAuditRouter(): Hono {
     if (denied) return denied;
     const body = await c.req.json<{ fromMs: number; toMs: number }>();
     const now = Date.now();
-    const fromMs = typeof body.fromMs === "number" ? body.fromMs : now - MAX_EXPORT_RANGE_MS;
+    const fromMs =
+      typeof body.fromMs === "number" ? body.fromMs : now - MAX_EXPORT_RANGE_MS;
     const toMs = typeof body.toMs === "number" ? body.toMs : now;
     if (toMs - fromMs > MAX_EXPORT_RANGE_MS) {
-      return c.json({ error: "RANGE_TOO_LARGE", maxMs: MAX_EXPORT_RANGE_MS }, 400);
+      return c.json(
+        { error: "RANGE_TOO_LARGE", maxMs: MAX_EXPORT_RANGE_MS },
+        400,
+      );
     }
     const items = search({ fromMs, toMs });
     const jobId = genExportJobId();
     const job: ExportJob = {
       jobId,
-      requesterRole: ((c.req.header("x-role")?.toLowerCase() as Role) ?? "external"),
+      requesterRole:
+        (c.req.header("x-role")?.toLowerCase() as Role) ?? "external",
       fromMs,
       toMs,
       createdAtMs: now,
@@ -232,9 +253,15 @@ export function buildAuditRouter(): Hono {
   return router;
 }
 
-export function getAuditStats(): { totalEvents: number; lastSeq: number | null } {
+export function getAuditStats(): {
+  totalEvents: number;
+  lastSeq: number | null;
+} {
   const total = events.length;
-  return { totalEvents: total, lastSeq: total > 0 ? events[total - 1].seq : null };
+  return {
+    totalEvents: total,
+    lastSeq: total > 0 ? events[total - 1].seq : null,
+  };
 }
 
 export function getRecentAuditEvents(limit: number): AuditEvent[] {

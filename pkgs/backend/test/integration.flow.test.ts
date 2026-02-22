@@ -61,4 +61,3 @@ describe("end-to-end with compensation and requeue", () => {
     expect(jobs.items.length).toBeGreaterThan(0);
   });
 });
-

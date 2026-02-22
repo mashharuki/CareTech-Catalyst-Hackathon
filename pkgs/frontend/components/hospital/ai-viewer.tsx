@@ -63,21 +63,24 @@ function getAiResults(isJa: boolean): Record<string, Result> {
       label: "Suspected pulmonary nodule",
       confidence: 89,
       category: "Lung-RADS 4B",
-      detail: "Detected a ~12mm nodule in right upper lung lobe. Contrast CT recommended.",
+      detail:
+        "Detected a ~12mm nodule in right upper lung lobe. Contrast CT recommended.",
     },
     p2: {
       marker: { top: "55%", left: "45%" },
       label: "Renal cortical thinning",
       confidence: 82,
       category: "CKD Stage 3b",
-      detail: "Bilateral renal cortical thinning observed with declining eGFR trend.",
+      detail:
+        "Bilateral renal cortical thinning observed with declining eGFR trend.",
     },
     p5: {
       marker: { top: "38%", left: "48%" },
       label: "Atrial fibrillation",
       confidence: 91,
       category: "AF Persistent",
-      detail: "Persistent AF identified on Holter ECG with CHA2DS2-VASc score 4.",
+      detail:
+        "Persistent AF identified on Holter ECG with CHA2DS2-VASc score 4.",
     },
     default: {
       marker: { top: "40%", left: "50%" },
@@ -166,7 +169,9 @@ export function AIViewer({
           className="mb-4 h-10 w-10 text-muted-foreground/40"
           strokeWidth={1.5}
         />
-        <p className="text-sm text-muted-foreground">{messages.aiViewer.emptyTitle}</p>
+        <p className="text-sm text-muted-foreground">
+          {messages.aiViewer.emptyTitle}
+        </p>
         <p className="mt-1.5 text-xs text-muted-foreground/60">
           {messages.aiViewer.emptySub}
         </p>
@@ -340,7 +345,8 @@ export function AIViewer({
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
                 <div className="absolute -bottom-1 left-full ml-2 whitespace-nowrap rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-[10px] text-red-700 shadow-sm">
-                  {currentResult.label} ({messages.aiViewer.confidence} {currentResult.confidence}%)
+                  {currentResult.label} ({messages.aiViewer.confidence}{" "}
+                  {currentResult.confidence}%)
                 </div>
               </motion.div>
             )}

@@ -103,7 +103,8 @@ export function PatientList({
               </div>
               <p className="truncate text-[10px] text-muted-foreground">
                 {patient.age}
-                {messages.patientList.yearsOld} {patient.gender} / {patient.condition}
+                {messages.patientList.yearsOld} {patient.gender} /{" "}
+                {patient.condition}
               </p>
             </div>
 

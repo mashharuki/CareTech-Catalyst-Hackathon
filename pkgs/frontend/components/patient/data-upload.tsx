@@ -115,7 +115,9 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
               </motion.div>
               <div className="text-center">
                 <p className="text-sm font-medium text-foreground">
-                  {isDragOver ? messages.dataUpload.dropHere : messages.dataUpload.dragDrop}
+                  {isDragOver
+                    ? messages.dataUpload.dropHere
+                    : messages.dataUpload.dragDrop}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {messages.dataUpload.formats}
@@ -130,7 +132,9 @@ export function DataUpload({ onStageChange, onComplete }: DataUploadProps) {
                 >
                   {messages.dataUpload.browse}
                 </Button>
-                <span className="text-xs text-muted-foreground">{messages.dataUpload.or}</span>
+                <span className="text-xs text-muted-foreground">
+                  {messages.dataUpload.or}
+                </span>
                 <Button
                   size="sm"
                   onClick={handleDemoUpload}

@@ -230,24 +230,32 @@ export function TrustExchange({
 
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
-          <p className="text-lg font-medium text-foreground">{listings.length}</p>
-          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.activeRequests}</p>
+          <p className="text-lg font-medium text-foreground">
+            {listings.length}
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            {messages.trustExchange.activeRequests}
+          </p>
         </div>
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
           <p className="text-lg font-medium text-foreground">
-            {listings.reduce((s, l) => s + l.buyers, 0).toLocaleString(
-              locale === "ja" ? "ja-JP" : "en-US",
-            )}
+            {listings
+              .reduce((s, l) => s + l.buyers, 0)
+              .toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
           </p>
-          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.contributors}</p>
+          <p className="text-[10px] text-muted-foreground">
+            {messages.trustExchange.contributors}
+          </p>
         </div>
         <div className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-center">
           <p className="text-lg font-medium text-primary">
-            {listings.reduce((s, l) => s + l.reward, 0).toLocaleString(
-              locale === "ja" ? "ja-JP" : "en-US",
-            )}
+            {listings
+              .reduce((s, l) => s + l.reward, 0)
+              .toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
           </p>
-          <p className="text-[10px] text-muted-foreground">{messages.trustExchange.maxReward}</p>
+          <p className="text-[10px] text-muted-foreground">
+            {messages.trustExchange.maxReward}
+          </p>
         </div>
       </div>
 
@@ -311,14 +319,20 @@ export function TrustExchange({
                           variant="secondary"
                           className="flex-shrink-0 text-xs font-semibold text-foreground"
                         >
-                          {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
+                          {listing.reward.toLocaleString(
+                            locale === "ja" ? "ja-JP" : "en-US",
+                          )}{" "}
+                          $TRUST
                         </Badge>
                       </div>
 
                       <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {listing.buyers.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} {messages.trustExchange.contributorsSuffix}
+                          {listing.buyers.toLocaleString(
+                            locale === "ja" ? "ja-JP" : "en-US",
+                          )}{" "}
+                          {messages.trustExchange.contributorsSuffix}
                         </span>
                         <span className="flex items-center gap-1">
                           <Star className="h-3 w-3 text-amber-400" />
@@ -352,7 +366,9 @@ export function TrustExchange({
                       </p>
 
                       <button
-                        onClick={() => setExpandedId(isExpanded ? null : listing.id)}
+                        onClick={() =>
+                          setExpandedId(isExpanded ? null : listing.id)
+                        }
                         className="mt-2 flex items-center gap-1 text-[10px] font-medium text-primary transition-colors hover:text-primary/80"
                       >
                         <Lock className="h-3 w-3" />
@@ -389,7 +405,11 @@ export function TrustExchange({
                                 className="h-8 bg-primary text-xs text-primary-foreground hover:bg-primary/90"
                               >
                                 <TrendingUp className="mr-1.5 h-3.5 w-3.5" />
-                                {typeLabel(listing.type)} - {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
+                                {typeLabel(listing.type)} -{" "}
+                                {listing.reward.toLocaleString(
+                                  locale === "ja" ? "ja-JP" : "en-US",
+                                )}{" "}
+                                $TRUST
                               </Button>
                             </motion.div>
                           )}
@@ -430,7 +450,11 @@ export function TrustExchange({
                               <motion.div
                                 className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent"
                                 animate={{ rotate: 360 }}
-                                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                                transition={{
+                                  duration: 0.8,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
                               />
                               <div>
                                 <p className="text-xs font-medium text-foreground">
@@ -453,7 +477,10 @@ export function TrustExchange({
                             >
                               <motion.div
                                 className="h-2 w-2 rounded-full bg-primary"
-                                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                                animate={{
+                                  scale: [1, 1.5, 1],
+                                  opacity: [1, 0.5, 1],
+                                }}
                                 transition={{ duration: 0.6, repeat: Infinity }}
                               />
                               <div>
@@ -477,7 +504,11 @@ export function TrustExchange({
                             >
                               <CheckCircle2 className="h-4 w-4" />
                               <span>
-                                {messages.trustExchange.done}: {listing.reward.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} $TRUST
+                                {messages.trustExchange.done}:{" "}
+                                {listing.reward.toLocaleString(
+                                  locale === "ja" ? "ja-JP" : "en-US",
+                                )}{" "}
+                                $TRUST
                               </span>
                             </motion.div>
                           )}

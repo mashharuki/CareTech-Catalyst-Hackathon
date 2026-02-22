@@ -75,7 +75,10 @@ function genId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function enqueueOutboxForRequest(payload: OutboxJobPayload, opts?: { simulateAnchor?: "ok" | "fail"; simulateAudit?: "ok" | "fail" }): OutboxJob {
+export function enqueueOutboxForRequest(
+  payload: OutboxJobPayload,
+  opts?: { simulateAnchor?: "ok" | "fail"; simulateAudit?: "ok" | "fail" },
+): OutboxJob {
   const now = Date.now();
   const job: OutboxJob = {
     id: genId("outbox"),
@@ -95,7 +98,10 @@ export function enqueueOutboxForRequest(payload: OutboxJobPayload, opts?: { simu
     updatedAtMs: now,
   };
   jobs.set(job.id, job);
-  logger.info({ id: job.id, trackingId: payload.trackingId }, "Outbox job enqueued");
+  logger.info(
+    { id: job.id, trackingId: payload.trackingId },
+    "Outbox job enqueued",
+  );
   return job;
 }
 
@@ -104,7 +110,9 @@ function backoffDelay(base: number, attempts: number): number {
   return base * Math.pow(2, attempts) + jitter;
 }
 
-async function runAnchor(job: OutboxJob): Promise<{ ok: boolean; receipt?: string; error?: string }> {
+async function runAnchor(
+  job: OutboxJob,
+): Promise<{ ok: boolean; receipt?: string; error?: string }> {
   if (job.simulateAnchor === "fail") {
     return { ok: false, error: "ANCHOR_SIMULATED_FAILURE" };
   }
@@ -112,7 +120,9 @@ async function runAnchor(job: OutboxJob): Promise<{ ok: boolean; receipt?: strin
   return { ok: true, receipt };
 }
 
-async function runAuditConfirm(job: OutboxJob): Promise<{ ok: boolean; error?: string }> {
+async function runAuditConfirm(
+  job: OutboxJob,
+): Promise<{ ok: boolean; error?: string }> {
   if (job.simulateAudit === "fail") {
     return { ok: false, error: "AUDIT_SIMULATED_FAILURE" };
   }
@@ -127,7 +137,9 @@ async function runAuditConfirm(job: OutboxJob): Promise<{ ok: boolean; error?: s
   return { ok: true };
 }
 
-async function compensateAnchor(job: OutboxJob): Promise<{ ok: boolean; error?: string }> {
+async function compensateAnchor(
+  job: OutboxJob,
+): Promise<{ ok: boolean; error?: string }> {
   recordAuditEvent({
     actorRole: "system",
     action: "anchor.rollback",
@@ -168,12 +180,17 @@ async function processJob(job: OutboxJob): Promise<void> {
       const r = await runAnchor(job);
       if (!r.ok) {
         job.attempts += 1;
-        job.errors.push({ step: "anchor", message: r.error || "ANCHOR_FAILED", timestampMs: Date.now() });
+        job.errors.push({
+          step: "anchor",
+          message: r.error || "ANCHOR_FAILED",
+          timestampMs: Date.now(),
+        });
         if (job.attempts >= job.maxAttempts) {
           job.status = "on_hold";
         } else {
           job.status = "retrying";
-          job.nextAttemptAtMs = Date.now() + backoffDelay(job.backoffBaseMs, job.attempts);
+          job.nextAttemptAtMs =
+            Date.now() + backoffDelay(job.backoffBaseMs, job.attempts);
         }
         job.updatedAtMs = Date.now();
         return;
@@ -186,7 +203,11 @@ async function processJob(job: OutboxJob): Promise<void> {
     if (current === "auditConfirm") {
       const r = await runAuditConfirm(job);
       if (!r.ok) {
-        job.errors.push({ step: "auditConfirm", message: r.error || "AUDIT_FAILED", timestampMs: Date.now() });
+        job.errors.push({
+          step: "auditConfirm",
+          message: r.error || "AUDIT_FAILED",
+          timestampMs: Date.now(),
+        });
         job.status = "compensating";
         job.updatedAtMs = Date.now();
         const comp = await compensateAnchor(job);

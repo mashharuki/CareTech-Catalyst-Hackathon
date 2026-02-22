@@ -303,7 +303,11 @@ export function buildParticipantsRouter(): Hono {
       targetType: "participant",
       targetId: p.id,
       result: "ok",
-      detail: { action: body.action, trustLevel: body.trustLevel, reason: body.reason },
+      detail: {
+        action: body.action,
+        trustLevel: body.trustLevel,
+        reason: body.reason,
+      },
     });
     return c.json({ ok: true, participant: p });
   });
@@ -321,6 +325,8 @@ export function buildParticipantsRouter(): Hono {
   return router;
 }
 
-export function getParticipantByIdSnapshot(id: string): Participant | undefined {
+export function getParticipantByIdSnapshot(
+  id: string,
+): Participant | undefined {
   return participantsById.get(id);
 }

@@ -162,7 +162,9 @@ export default function AppendixPage() {
               </div>
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  {isJa ? "図解1：データ分離構造" : "Figure 1: Data Separation Structure"}
+                  {isJa
+                    ? "図解1：データ分離構造"
+                    : "Figure 1: Data Separation Structure"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Data Separation Architecture
@@ -229,7 +231,9 @@ export default function AppendixPage() {
               </div>
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  {isJa ? "図解2：法規制マッピング" : "Figure 2: Regulatory Compliance Matrix"}
+                  {isJa
+                    ? "図解2：法規制マッピング"
+                    : "Figure 2: Regulatory Compliance Matrix"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Regulatory Compliance Matrix
@@ -257,7 +261,10 @@ export default function AppendixPage() {
                 </thead>
                 <tbody>
                   {rows.map((row, i) => (
-                    <tr key={i} className="border-b border-border last:border-0">
+                    <tr
+                      key={i}
+                      className="border-b border-border last:border-0"
+                    >
                       <td className="px-4 py-3 text-xs font-medium text-foreground">
                         {row.req}
                       </td>
@@ -290,7 +297,9 @@ export default function AppendixPage() {
               </div>
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  {isJa ? "図解3：経済圏エコシステム" : "Figure 3: Token Flow Ecosystem"}
+                  {isJa
+                    ? "図解3：経済圏エコシステム"
+                    : "Figure 3: Token Flow Ecosystem"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Token Flow - Win-Win-Win Ecosystem

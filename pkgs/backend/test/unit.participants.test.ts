@@ -9,7 +9,8 @@ describe("participants", () => {
       headers: {
         "content-type": "application/json",
         "x-role": "operator",
-        "x-scopes": "participant:register participant:update request:read audit:read",
+        "x-scopes":
+          "participant:register participant:update request:read audit:read",
       },
       body: JSON.stringify({
         id: "org-1",

@@ -132,17 +132,25 @@ export function BlockchainConsole({
           <p className="font-mono text-xs font-medium text-foreground">
             {blockHeight.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
           </p>
-          <p className="text-[9px] text-muted-foreground">{messages.blockchain.blockHeight}</p>
+          <p className="text-[9px] text-muted-foreground">
+            {messages.blockchain.blockHeight}
+          </p>
         </div>
         <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-center">
-          <p className="font-mono text-xs font-medium text-foreground">{peers}</p>
-          <p className="text-[9px] text-muted-foreground">{messages.blockchain.peers}</p>
+          <p className="font-mono text-xs font-medium text-foreground">
+            {peers}
+          </p>
+          <p className="text-[9px] text-muted-foreground">
+            {messages.blockchain.peers}
+          </p>
         </div>
         <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-center">
           <p className="font-mono text-xs font-medium text-emerald-600">
             {events.length}
           </p>
-          <p className="text-[9px] text-muted-foreground">{messages.blockchain.yourTxns}</p>
+          <p className="text-[9px] text-muted-foreground">
+            {messages.blockchain.yourTxns}
+          </p>
         </div>
       </div>
 
@@ -164,14 +172,19 @@ export function BlockchainConsole({
               className={`flex gap-1 ${typeColor(log.type)}`}
             >
               <span className="flex-shrink-0 text-muted-foreground/50">
-                {log.timestamp.toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US", {
-                  hour12: false,
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })}
+                {log.timestamp.toLocaleTimeString(
+                  locale === "ja" ? "ja-JP" : "en-US",
+                  {
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  },
+                )}
               </span>
-              <span className={`flex-shrink-0 font-semibold ${labelColor(log.label)}`}>
+              <span
+                className={`flex-shrink-0 font-semibold ${labelColor(log.label)}`}
+              >
                 [{log.label}]
               </span>
               <span>{log.message}</span>
@@ -183,7 +196,9 @@ export function BlockchainConsole({
       <div className="flex items-center justify-between rounded-xl border border-border bg-secondary/30 px-4 py-3">
         <div className="flex items-center gap-2">
           <Shield className="h-3.5 w-3.5 text-primary" />
-          <span className="text-xs text-muted-foreground">{messages.blockchain.walletBalance}</span>
+          <span className="text-xs text-muted-foreground">
+            {messages.blockchain.walletBalance}
+          </span>
         </div>
         <motion.span
           key={balance}
@@ -191,7 +206,7 @@ export function BlockchainConsole({
           animate={{ scale: 1 }}
           className="text-lg font-medium text-foreground"
         >
-          {balance.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")} {" "}
+          {balance.toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}{" "}
           <span className="text-xs text-muted-foreground">$TRUST</span>
         </motion.span>
       </div>

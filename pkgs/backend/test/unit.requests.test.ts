@@ -63,4 +63,3 @@ describe("requests judgment", () => {
     expect(body.status).toBe("rejected");
   });
 });
-

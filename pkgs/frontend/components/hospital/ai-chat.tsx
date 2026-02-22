@@ -21,10 +21,12 @@ interface Message {
   content: string;
 }
 
-function buildKnowledgeBase(isJa: boolean): Record<string, { q: RegExp; a: string }[]> {
+function buildKnowledgeBase(
+  isJa: boolean,
+): Record<string, { q: RegExp; a: string }[]> {
   if (isJa) {
     return {
-      "肺": [
+      肺: [
         {
           q: /鑑別|考えられる|診断/i,
           a: "肺結節の鑑別として原発性肺癌・転移性病変・良性肉芽腫などが考えられます。12mmかつ辺縁不整のため悪性リスク評価を優先してください。",
@@ -91,12 +93,14 @@ function getAIResponse(
 
   if (isJa) {
     if (question.includes("リスク") || question.includes("予後")) {
-      return `${patient.name}さん（${patient.age}歳）のリスクスコアは${patient.riskScore}です。$${""}`.replace("$", "") +
+      return (
+        `${patient.name}さん（${patient.age}歳）のリスクスコアは${patient.riskScore}です。` +
         (patient.riskScore >= 80
           ? "高リスク群に該当します。早期介入と定期モニタリングを推奨します。"
           : patient.riskScore >= 50
             ? "中リスク群です。生活習慣改善と3か月ごとのフォローが推奨です。"
-            : "低リスク群です。年次検診の継続で問題ありません。");
+            : "低リスク群です。年次検診の継続で問題ありません。")
+      );
     }
     return `${patient.name}さんの${patient.condition}について、どの観点を深掘りしますか？（例: 鑑別診断、治療方針、ガイドライン）`;
   }
@@ -124,7 +128,10 @@ export function AIChat({ patient }: { patient: Patient | null }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const quickQuestions = useMemo(() => messages.aiChat.quickQuestions, [messages.aiChat.quickQuestions]);
+  const quickQuestions = useMemo(
+    () => messages.aiChat.quickQuestions,
+    [messages.aiChat.quickQuestions],
+  );
 
   useEffect(() => {
     setMessagesState([]);
@@ -328,7 +335,11 @@ export function AIChat({ patient }: { patient: Patient | null }) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={patient ? messages.aiChat.inputPlaceholder : messages.aiChat.inputDisabled}
+                placeholder={
+                  patient
+                    ? messages.aiChat.inputPlaceholder
+                    : messages.aiChat.inputDisabled
+                }
                 className="h-9 flex-1 rounded-lg border border-border bg-card px-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary/30 focus:outline-none"
                 disabled={!patient || isTyping}
               />

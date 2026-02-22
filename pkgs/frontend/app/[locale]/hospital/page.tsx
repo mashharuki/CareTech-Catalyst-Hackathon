@@ -18,7 +18,9 @@ function createMockPatients(isJa: boolean): Patient[] {
       age: 67,
       gender: "M",
       riskScore: 92,
-      condition: isJa ? "胸部異常影（肺結節）" : "Abnormal chest shadow (lung nodule)",
+      condition: isJa
+        ? "胸部異常影（肺結節）"
+        : "Abnormal chest shadow (lung nodule)",
       lastVisit: "2026-02-20",
       department: isJa ? "呼吸器内科" : "Pulmonology",
     },
@@ -142,7 +144,10 @@ export default function HospitalPage() {
   );
   const [adopted, setAdopted] = useState(false);
 
-  const mockPatients = useMemo(() => createMockPatients(locale === "ja"), [locale]);
+  const mockPatients = useMemo(
+    () => createMockPatients(locale === "ja"),
+    [locale],
+  );
 
   const selectedPatient =
     mockPatients.find((p) => p.id === selectedPatientId) ?? null;

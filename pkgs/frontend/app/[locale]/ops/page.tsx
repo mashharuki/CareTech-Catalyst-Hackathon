@@ -90,7 +90,9 @@ export default async function OpsPage({
           <div className="mt-1 text-2xl font-semibold">{avgMs} ms</div>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
-          <div className="text-xs text-muted-foreground">{messages.ops.errors}</div>
+          <div className="text-xs text-muted-foreground">
+            {messages.ops.errors}
+          </div>
           <div className="mt-1 text-2xl font-semibold">{totals.error}</div>
         </div>
       </div>
@@ -101,7 +103,9 @@ export default async function OpsPage({
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="rounded border border-border p-3">
-              <div className="text-xs text-muted-foreground">{messages.ops.total}</div>
+              <div className="text-xs text-muted-foreground">
+                {messages.ops.total}
+              </div>
               <div className="text-lg font-semibold">{outbox.total}</div>
             </div>
             {Object.entries(outbox.byStatus || {}).map(([k, v]) => (

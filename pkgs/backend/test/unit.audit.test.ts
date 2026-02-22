@@ -26,4 +26,3 @@ describe("audit integrity", () => {
     expect(body.ok).toBe(true);
   });
 });
-

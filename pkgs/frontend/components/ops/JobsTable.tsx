@@ -45,7 +45,9 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
   return (
     <div className="rounded-xl border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
-        <div className="text-sm font-medium text-foreground">{messages.jobsTable.title}</div>
+        <div className="text-sm font-medium text-foreground">
+          {messages.jobsTable.title}
+        </div>
         <div className="text-xs text-muted-foreground">
           {pending ? messages.jobsTable.updating : ""}
         </div>
@@ -55,10 +57,18 @@ export default function JobsTable({ initial }: { initial: Job[] }) {
           <thead>
             <tr className="border-b border-border text-xs text-muted-foreground">
               <th className="px-3 py-2 text-left">{messages.jobsTable.job}</th>
-              <th className="px-3 py-2 text-left">{messages.jobsTable.status}</th>
-              <th className="px-3 py-2 text-left">{messages.jobsTable.attempts}</th>
-              <th className="px-3 py-2 text-left">{messages.jobsTable.tracking}</th>
-              <th className="px-3 py-2 text-right">{messages.jobsTable.action}</th>
+              <th className="px-3 py-2 text-left">
+                {messages.jobsTable.status}
+              </th>
+              <th className="px-3 py-2 text-left">
+                {messages.jobsTable.attempts}
+              </th>
+              <th className="px-3 py-2 text-left">
+                {messages.jobsTable.tracking}
+              </th>
+              <th className="px-3 py-2 text-right">
+                {messages.jobsTable.action}
+              </th>
             </tr>
           </thead>
           <tbody>
