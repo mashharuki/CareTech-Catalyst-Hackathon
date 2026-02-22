@@ -24,7 +24,7 @@ NextMed TrustBridge は、医療データ連携の可否判定を「参加者信
 
 - 既存契約は `counter.compact` の単一状態遷移のみで、業務ドメイン境界が未定義。
 - `cli` は wallet/proof/indexer 接続、デプロイ、呼び出し、ログ出力の実行基盤を提供。
-- `frontend` はテンプレート状態で、業務UIの責務をまだ持たない。
+- `frontend` は Next.js App Router ベースのモックUI（`app/`）が存在する一方、Vite テンプレート残骸（`src/`, `vite.config.ts`, `index.html`）が混在している。
 - 既存構成に常駐HTTP API層は存在しないため、`frontend` 連携の安定化には API 実行境界の新設が必要。
 - 既存構成は「パッケージ境界を明確化する」steering 方針と整合しているため、同方針を維持して拡張する。
 
@@ -92,7 +92,7 @@ graph TB
 
 | Layer | Choice / Version | Role in Feature | Notes |
 | --- | --- | --- | --- |
-| Frontend / UI | React 19.2, Vite 7.3 | 参加者・同意・判定・監査画面 | 既存 `frontend` を業務UIへ拡張 |
+| Frontend / UI | Next.js 16 App Router, React 19.2 | 参加者・同意・判定・監査画面 | v0 モックを `app/` 起点で実装し、Server/Client Component 境界を明示する |
 | Backend / API | TypeScript 5.9 ESM, Node.js | 常駐HTTP API とドメインサービス実行境界 | 新規 `pkgs/backend` を追加し API 境界を固定 |
 | Operational CLI | TypeScript 5.9 ESM, Node.js | 運用コマンド（デプロイ/検証/保守） | 既存 `pkgs/cli` は運用用途に特化 |
 | Shared Infrastructure | TypeScript 5.9 ESM (`pkgs/shared-infra`) | provider 設定、接続ユーティリティ、共通型 | `backend` と `cli` の共通依存点を集約 |
@@ -101,6 +101,13 @@ graph TB
 | Data / Persistence | Chain state + private state store + audit store | 同意/要求/監査の保存 | 監査検索性のためオフチェーン監査ストア必須 |
 | Observability | pino, OpenTelemetry metrics semantic conventions | 遅延・成功率・エラー分類 | 低カーディナリティ指標を採用 |
 | Infra / Runtime | Docker compose, proof server 4.0.0 | standalone/testnet 実行 | 既存 compose 資産を継続利用 |
+
+### Frontend Implementation Alignment (Next.js)
+
+- UI 実装の唯一のルーティング基盤を `pkgs/frontend/app` に固定する。
+- `src/` および Vite 関連設定は段階的に廃止し、`next build` が成功する状態を常時維持する。
+- v0 モックで作成された画面を `hospital`, `patient`, `appendix` のルートとして維持し、API 接続時に画面責務を分離する。
+- 初期接続では BFF 新設を行わず、`frontend -> backend` の HTTP API 連携を steering の依存方向どおりに適用する。
 
 ## System Flows
 

@@ -3,7 +3,7 @@
 ## 技術スタック方針
 - リポジトリは `pnpm` ワークスペースによるモノレポ構成を採用する。
 - 主要実装言語は TypeScript（ESM）とし、契約ロジックは Compact を併用する。
-- UI は React + Vite を基準とし、CLI/Contract は Node.js 実行を前提とする。
+- UI は Next.js (App Router) + React を基準とし、CLI/Contract は Node.js 実行を前提とする。
 
 ## パッケージ責務の技術境界
 - `contract`: Compact 契約とその TypeScript 連携面（エクスポート・テスト）を担う。
@@ -22,6 +22,7 @@
 - フォーマットはリポジトリ全体で一貫させる（Biome）。
 - 型安全性と静的検査を維持する（TypeScript + ESLint）。
 - 振る舞いテストを優先し、契約ロジックは決定的なテストを維持する（Vitest）。
+- `frontend` の品質ゲートは `next build` を最終判定に含め、`app` ルーター配下の構成整合を維持する。
 
 ## ネットワーク・実行環境の原則
 - 環境依存値（ノード、インデクサ、Proof Server、シード）はコードに固定せず、設定と実行文脈で管理する。
