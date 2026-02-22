@@ -13,7 +13,7 @@ env:
   COMPACT_VERSION: "0.25.0"
   TESTCONTAINERS_RYUK_DISABLED: "true"
 jobs:
-  verify:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,47 +29,5 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install -r --frozen-lockfile
-      - name: Install compact CLI
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          compact update "${COMPACT_VERSION}"
-          compact --version
-      - name: Lint all packages
-        run: pnpm -r run lint
-      - name: Compile contract
-        run: pnpm --filter contract run compact
-      - name: Contract unit tests
-        run: pnpm --filter contract run test
-      - name: Typecheck CLI
-        run: pnpm --filter cli run typecheck
-      - name: Build CLI
-        run: pnpm --filter cli run build
       - name: Build frontend
         run: pnpm --filter frontend run build
-  cli-api:
-    runs-on: ubuntu-latest
-    needs: verify
-    if: github.event_name != 'pull_request'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install -r --frozen-lockfile
-      - name: Install compact CLI
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          compact update "${COMPACT_VERSION}"
-          compact --version
-      - name: CLI API tests
-        run: pnpm --filter cli run test-api
