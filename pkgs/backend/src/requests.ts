@@ -2,8 +2,9 @@ import type { Context } from "hono";
 import { Hono } from "hono";
 import { authorizeScopes, type Scope } from "shared-infra/authz";
 import { createAppLogger } from "shared-infra/logger";
-import { type EvaluateConsentBody, evaluateConsentLocal } from "./consents.js";
 import { recordAuditEvent } from "./audit.js";
+import { type EvaluateConsentBody, evaluateConsentLocal } from "./consents.js";
+import { enqueueOutboxForRequest } from "./outbox.js";
 import { getParticipantByIdSnapshot, type Participant } from "./participants.js";
 
 type RequestStatus = "received" | "approved" | "rejected";
@@ -146,6 +147,18 @@ export function buildRequestsRouter(): Hono {
       result: req.status === "approved" ? "ok" : "error",
       detail: { reason: req.reason },
     });
+    if (req.status === "approved") {
+      const simAnchor = c.req.header("x-simulate-anchor") as "ok" | "fail" | undefined;
+      const simAudit = c.req.header("x-simulate-audit") as "ok" | "fail" | undefined;
+      enqueueOutboxForRequest({
+        trackingId,
+        requesterId: body.requesterId,
+        consentId: body.consentId,
+        dataType: body.dataType,
+        recipient: body.recipient,
+        purpose: body.purpose,
+      }, { simulateAnchor: simAnchor, simulateAudit: simAudit });
+    }
     return c.json({ ok: true, trackingId, status: req.status, reason: req.reason }, 201);
   });
 

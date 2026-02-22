@@ -232,3 +232,12 @@ export function buildAuditRouter(): Hono {
   return router;
 }
 
+export function getAuditStats(): { totalEvents: number; lastSeq: number | null } {
+  const total = events.length;
+  return { totalEvents: total, lastSeq: total > 0 ? events[total - 1].seq : null };
+}
+
+export function getRecentAuditEvents(limit: number): AuditEvent[] {
+  if (limit <= 0) return [];
+  return events.slice(Math.max(0, events.length - limit));
+}

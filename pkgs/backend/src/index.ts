@@ -3,10 +3,12 @@ import { Hono } from "hono";
 import { authorizeScopes } from "shared-infra/authz";
 import { createAppLogger } from "shared-infra/logger";
 import { getProviderConfigFromEnv } from "shared-infra/network";
-import { buildConsentsRouter } from "./consents.js";
 import { buildAuditRouter } from "./audit.js";
-import { buildRequestsRouter } from "./requests.js";
+import { buildConsentsRouter } from "./consents.js";
+import { buildOutboxRouter, startOutboxWorker } from "./outbox.js";
+import { buildOpsRouter, metricsMiddleware } from "./metrics.js";
 import { buildParticipantsRouter } from "./participants.js";
+import { buildRequestsRouter } from "./requests.js";
 
 const app = new Hono();
 
@@ -32,14 +34,20 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
+app.use("*", metricsMiddleware());
 // 参加者管理APIをマウント
 app.route("/api/participants", buildParticipantsRouter());
 // 同意管理APIをマウント
 app.route("/api/consents", buildConsentsRouter());
 // 監査APIをマウント
 app.route("/api/audit", buildAuditRouter());
+// Outbox監視とAPI
+app.route("/api/outbox", buildOutboxRouter());
+startOutboxWorker();
 // 連携要求判定APIをマウント
 app.route("/api/requests", buildRequestsRouter());
+// 運用メトリクスAPI
+app.route("/api/ops", buildOpsRouter());
 
 // 共通プロバイダ設定とロガーの初期化
 const providerCfg = getProviderConfigFromEnv();
